@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+PORT=3030 DEBUG=basic:* npm start
+
