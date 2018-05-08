@@ -1,6 +1,50 @@
 # Threshodl Token
 
-## Getting Started - Server
+## Getting Started
+
+### Run Private Test Node
+
+The easiest method to run a local private ethereum node that will also mine blocks to facilitate creating transactions and to tests this api is via [Ganache](http://truffleframework.com/ganache/) GUI application. 
+
+```
+brew cask install ganache
+```
+Open application and it will automatically create 10 addresses. Save the mnemonic phrase if you want to use it again. It will be set the url to `http://127.0.0.1:7545`
+
+### Truffle Token Contract
+
+This requires familiarization with truffle framework and open-zeppelin for making ERC20 token contracts.
+
+Run Compile when changes are made to the `token-contract/contracts` directory.
+```
+bash bin/truffle-compile
+```
+
+Run Migrate to deploy contract to node. Truffle will migrate new deployments inside `token-contract/migrations` directory but ignore those already sent.
+
+```
+bash bin/truffle-migrate
+```
+
+### Environment Variables
+
+Create `.env` file in the root directory and add the following:
+
+```
+# migration address is here for reference and used by truffle
+MIGRATE_ADDRESS=taken-from-migration-output
+
+## Required for API
+NODE_URL=taken-from-node-url
+
+# token contract address required for instantiating contract to use its functions
+TOKEN_CONTRACT_ADDRESS=taken-from-node-address
+
+# owner address required when /api/balance
+OWNER_ACCOUNT=taken-from-migration-output
+```
+
+### Server
 
 start the server
 ```
@@ -17,22 +61,6 @@ To run server and watch for changes and run debugger via `--inspect`
 ```
 npm run nodemon
 ```
-
-## Getting Started - Truffle Token Contract
-
-This requires familiarization with truffle framework and open-zeppelin for making ERC20 token contracts.
-
-Run Compile when changes are made to the `token-contract/contracts` directory.
-```
-bash bin/truffle-compile
-```
-
-Run Migrate to deploy contract to node. Truffle will migrate new deployments inside `token-contract/migrations` directory but ignore those already sent.
-
-```
-bash bin/truffle-migrate
-```
-
 
 ## Bash
 There are scripts that perform operations and follow this tips to create new ones.
