@@ -57,3 +57,8 @@ Add it to package.json is optional
 Sample constracts are used for reference and can be found in `token-contract/samples`. 
 
 - advancedToken.sol - sample token code that has been fixed to meet solidity v0.4.23. This can be tested by adding it into Mist app. Deploy using TokenERC20 token name.
+
+
+## Bugs to Fix
+
+transferOwnership & kill functions both catch an 'invalid address'. The response it 200 with `false` boolean indicating request failed. 

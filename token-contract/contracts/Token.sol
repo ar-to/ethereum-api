@@ -12,8 +12,8 @@ import "../../node_modules/openzeppelin-solidity/contracts/token/ERC20/MintableT
  * @dev INITIAL_SUPPLY is initial balance of tokens given to owner address
  */
 contract Token is StandardToken, Ownable, MintableToken {
-    string public name = "TutorialToken";
-    string public symbol = "TT";
+    string public name = "ThreshodlToken";
+    string public symbol = "THDL";
     uint public decimals = 2;
     uint public INITIAL_SUPPLY = 120 * (10 ** decimals);
     address public owner;
@@ -25,6 +25,9 @@ contract Token is StandardToken, Ownable, MintableToken {
         owner = msg.sender;
     }
 
+    /**
+    * @param _value to add to supply
+    */
     function addTokenToTotalSupply(uint _value) public onlyOwner returns(bool) {
         require(_value > 0, "Value over 0 required");
         require(msg.sender == owner, "Owner of this contract is required");
