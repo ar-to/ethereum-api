@@ -48,6 +48,9 @@ Blockchain = {
   getBalance: async function (address) {
     let bal = {};
     let t = await web3.eth.getBalance(address, function (error, balance) {
+      if (error) {
+        return bal.error = err.message;
+      }
       let balanceObj = new BigNumber(balance);
       bal.address = address;
       bal.balanceObj = balanceObj;
@@ -60,6 +63,9 @@ Blockchain = {
       } else {
         bal.owner = false;
       }
+    }).catch(function (err) {
+      console.log(err.message);
+      return bal.error = err.message;
     });
     let t2 = await tokenContract.at(contractAddress).then(function (instance) {
       tokenInstance = instance;
@@ -72,6 +78,7 @@ Blockchain = {
       bal.tokenBalance = result;
     }).catch(function (err) {
       console.log(err.message);
+      return bal.error = err.message;
     });
     return bal;
   },
@@ -80,6 +87,7 @@ Blockchain = {
     let obj = {};
     await this.getTokenOwner().then((value) => {
       obj.owner = value.owner;
+      obj.contractAddress = contractAddress;
       let t = tokenContract.at(contractAddress).then(function (instance) {
         tokenInstance = instance;
 
@@ -106,10 +114,12 @@ Blockchain = {
         return obj;
       }).catch(function (err) {
         console.log(err.message);
+        return obj.error = err.message;
       });
       return t;
     }).catch(function (err) {
       console.log(err.message);
+      return obj.error = err.message;
     });;
     return obj;
   },
@@ -123,12 +133,12 @@ Blockchain = {
       return obj;
     }).catch(function (err) {
       console.log(err.message);
+      return obj.error = err.message;
     });
     return t;
   },
   addTokenToTotalSupply: async function (amount) {
     let obj = {};
-    const contractAddress = process.env.TOKEN_CONTRACT_ADDRESS;
     await this.getTokenOwner().then((value) => {
       let t = tokenContract.at(contractAddress).then(function (instance) {
         tokenInstance = instance;
@@ -139,9 +149,13 @@ Blockchain = {
         return obj;
       }).catch(function (err) {
         console.log(err.message);
+        return obj.error = err.message;
       });
       return t;
-    })
+    }).catch(function (err) {
+      console.log(err.message);
+      return obj.error = err.message;
+    });
     return obj;
   },
   transferTokens: async function (toAddress, amount) {
@@ -158,10 +172,12 @@ Blockchain = {
         return obj;
       }).catch(function (err) {
         console.log(err.message);
+        return obj.error = err.message;
       });
       return t;
     }).catch(function (err) {
       console.log(err.message);
+      return obj.error = err.message;
     });
     return obj;
   },
@@ -183,10 +199,12 @@ Blockchain = {
       }).catch(function (err) {
         obj.transferred = false;
         console.log(err.message);
+        return obj.error = err.message;
       });
       return t;
     }).catch(function (err) {
       console.log(err.message);
+      return obj.error = err.message;
     });
     return obj;
   },
@@ -204,8 +222,9 @@ Blockchain = {
       return obj;
     }).catch(function (err) {
       obj.tokenKilled = false;
-      return obj;
+      obj.error = err.message;
       console.log(err.message);
+      return obj;
     });
     return t;
   },
