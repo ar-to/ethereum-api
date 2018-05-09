@@ -35,7 +35,7 @@ if (typeof tokenContract.currentProvider.sendAsync !== "function") {
 /**
  * Object holds all parameters and functions needed to communicate by the API
  */
-Blockchain = {
+Token = {
   web3Provider: web3Provider,
   contracts: {},
 
@@ -91,22 +91,22 @@ Blockchain = {
       let t = tokenContract.at(contractAddress).then(function (instance) {
         tokenInstance = instance;
 
-        tokenInstance.name().then((value) => {
-          obj.tokenName = value;
-        });
-        tokenInstance.symbol().then((value) => {
-          obj.tokenSymbol = value;
-        });
-        tokenInstance.decimals().then((value) => {
-          obj.tokenDecimals = value;
-        });
+        infoArray = [
+          tokenInstance.name(),
+          tokenInstance.symbol(),
+          tokenInstance.decimals(),
+          tokenInstance.totalSupply()
+        ]
+        Promise.all(infoArray).then((values) => {
+          obj.tokenName = values[0];
+          obj.tokenSymbol = values[1];
+          obj.tokenDecimals = values[2];
+          obj.tokenInitialSupply = values[3];
+        })
         //initial variable but changed by addTokenToTotalSupply()
         // tokenInstance.INITIAL_SUPPLY().then((value) => {
         //   obj.tokenInitialSupply = value;
         // });
-        tokenInstance.totalSupply().then((value) => {//initial supply fixed
-          obj.tokenInitialSupply = value;
-        });
         return tokenInstance.balanceOf(value.owner);
       }).then(function (result) {
         // obj.tokenBalance = result.toFixed(obj.tokenDecimals);
@@ -230,4 +230,4 @@ Blockchain = {
   },
 }
 
-module.exports = Blockchain;
+module.exports = Token;

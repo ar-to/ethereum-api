@@ -62,3 +62,9 @@ typings/
 
 # network wallets as json files with keystore and password each
 network-wallets/*
+!network-wallets/.gitkeep
+
+# deployed contracts as json files with containing the abi and contract address 
+# used to connect to contract
+deployed-contracts/*
+!deployed-contracts/.gitkeep
