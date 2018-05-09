@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+curl -X POST -H "Content-Type: application/json" --data '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":83}' http://127.0.0.1:7545
+
+#
+# balance returns a hexadecimal
+# you can convert it to integer in wei using: https://www.binaryhexconverter.com/hex-to-decimal-converter
+#
+#curl -X POST -H "Content-Type: application/json" --data '{"jsonrpc":"2.0","method":"eth_getBalance","params":["0x83634A8eAADc34b860b4553E0dAf1FAc1cb43b1E", "latest"],"id":1}' http://127.0.0.1:7545

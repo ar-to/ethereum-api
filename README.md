@@ -2,9 +2,11 @@
 
 - [List of All API Endpoints](#endpoints)
 
+- [Notes](#notes)
+
 ## Getting Started
 
-NOTE: the contracts are compiled into the `token-contract/build/contracts` directory and it was added to `/gitignore` as a **comment** to facilitate migrating new contracts during development when using a local private node. But when coming back to the default contract simple compile and migrate or migrate with reset to overwrite existing contracts. There is also a `deployed-contracts` directory that can store the artifact files (e.g.Token.json) if you want to keep different deployments to interact with your contracts in the future. Read [here](#vc) for storing contracts in version control.
+Please read notes for important information before developing.
 
 ### Run Private Test Node
 
@@ -97,8 +99,6 @@ Resetting to overwrite the existing contracts can be done with:
 bash bin/truffle-migrate-reset
 ```
 
-####
-
 **Remember to update the addresses in the `.env` file so the api will know which address to use for the token contract and owner.**
 
 ### Server
@@ -117,24 +117,6 @@ npm run dev
 To run server and watch for changes and run debugger via `--inspect`
 ```
 npm run nodemon
-```
-
-## Bash
-There are scripts that perform operations and follow this tips to create new ones.
-
-Create a new bash or node script 
-```
-#!/usr/bin/env bash
-#!/usr/bin/env node
-```
-```
-chmod +x ./bin/newscript
-```
-Add it to package.json is optional
-```
-  "scripts": {
-    "script": "./bin/newscript"
-  }
 ```
 
 ## Adding Networks
@@ -206,6 +188,46 @@ bash bin/truffle-migrate-ropsten
 ```
 
 **Do same for mainnet using `network-wallets/mainnet.config.json`**
+
+## Notes
+
+1. This api uses web3 for interacting with the node, but manual curl commands can be used via [RPC calls](https://github.com/ethereum/wiki/wiki/JSON-RPC). Test the `bash bin/rpc-call` to test an rpc call.
+
+2. the contracts are compiled into the `token-contract/build/contracts` directory and it was added to `/gitignore` as a **comment** to facilitate migrating new contracts during development when using a local private node. But when coming back to the default contract simple compile and migrate or migrate with reset to overwrite existing contracts. There is also a `deployed-contracts` directory that can store the artifact files (e.g.Token.json) if you want to keep different deployments to interact with your contracts in the future. Read [here](#vc) for storing contracts in version control.
+
+## Scripts
+
+Scripts are added for convenience to allow commands to be performs from the root and for testing.
+
+- rpc-call - a curl command via an rpc call to communicated to a node. Remember to change the url:port to connect to the correct node and address when using the `eth_getBalance` method.
+
+- bash bin/truffle-compile
+
+- bash bin/truffle-migrate
+
+- bash bin/truffle-migrate-reset
+
+- bash bin/truffle-migrate-ropsten
+
+- bash bin/truffle-gas-estimate
+
+## Bash
+There are scripts that perform operations and follow this tips to create new ones.
+
+Create a new bash or node script 
+```
+#!/usr/bin/env bash
+#!/usr/bin/env node
+```
+```
+chmod +x ./bin/newscript
+```
+Add it to package.json is optional
+```
+  "scripts": {
+    "script": "./bin/newscript"
+  }
+```
 
 ## Helpers
 
