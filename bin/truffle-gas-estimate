@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+cd token-contract
+truffle exec ./helpers/gasEstimate.js

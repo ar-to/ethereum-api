@@ -1,8 +1,18 @@
-// import dotenv from 'dotenv';//allows use of enviroment variables
-// dotenv.config();
-require('dotenv').config();
+var WalletProvider = require("truffle-wallet-provider");
 
-console.log('add', process.env.OWNER_ACCOUNT)
+// ROPSTEN testnet
+const ropstenConfig = require("../network-wallets/ropsten.config.json");
+var ropstenProvider;
+if(ropstenConfig){
+  const keystore = ropstenConfig.keystore;
+  const pass = ropstenConfig.password;
+  const url = ropstenConfig.url
+  var wallet = require('ethereumjs-wallet').fromV3(keystore, pass);
+  ropstenProvider = new WalletProvider(wallet, url);
+}
+
+// Mainnet
+// const liveConfig = require("../network-wallets/mainnet.config.json");
 
 module.exports = {
   // See <http://truffleframework.com/docs/advanced/configuration>
@@ -14,6 +24,12 @@ module.exports = {
       port: 7545,
       network_id: "*", // Match any network id
       from: "0x451E62137891156215d9D58BeDdc6dE3f30218e7"
+    },
+    ropsten: {
+      provider: ropstenProvider,
+      network_id: '3',
+      gas: 2249435,
+      gasPrice: 20000000000,
     },
   }
 };

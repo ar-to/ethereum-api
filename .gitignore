@@ -59,3 +59,6 @@ typings/
 
 # contracts after truffle compile
 #token-contract/build
+
+# network wallets as json files with keystore and password each
+network-wallets/*
