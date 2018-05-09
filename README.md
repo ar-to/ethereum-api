@@ -269,73 +269,103 @@ transferOwnership & kill functions both catch an 'invalid address'. The response
         ]
     },
     {
-        "path": "/api/get-web3-provider",
-        "methods": [
-            "GET"
-        ]
-    },
-    {
-        "path": "/api/get-contract",
-        "methods": [
-            "GET"
-        ]
-    },
-    {
-        "path": "/api/get-contract-instance",
-        "methods": [
-            "GET"
-        ]
-    },
-    {
-        "path": "/api/node-accounts",
-        "methods": [
-            "GET"
-        ]
-    },
-    {
-        "path": "/api/balance",
-        "methods": [
-            "GET"
-        ]
-    },
-    {
-        "path": "/api/balance/:address",
-        "methods": [
-            "GET"
-        ]
-    },
-    {
         "path": "/api/token",
         "methods": [
             "GET"
         ]
     },
     {
-        "path": "/api/owner",
+        "path": "/api/token/get-web3-provider",
         "methods": [
             "GET"
         ]
     },
     {
-        "path": "/api/add-tokens/:amount",
+        "path": "/api/token/get-contract",
+        "methods": [
+            "GET"
+        ]
+    },
+    {
+        "path": "/api/token/get-contract-instance",
+        "methods": [
+            "GET"
+        ]
+    },
+    {
+        "path": "/api/token/node-accounts",
+        "methods": [
+            "GET"
+        ]
+    },
+    {
+        "path": "/api/token/balance",
+        "methods": [
+            "GET"
+        ]
+    },
+    {
+        "path": "/api/token/balance/:address",
+        "methods": [
+            "GET"
+        ]
+    },
+    {
+        "path": "/api/token/owner",
+        "methods": [
+            "GET"
+        ]
+    },
+    {
+        "path": "/api/token/add-tokens/:amount",
         "methods": [
             "POST"
         ]
     },
     {
-        "path": "/api/transfer-tokens",
+        "path": "/api/token/transfer-tokens",
         "methods": [
             "POST"
         ]
     },
     {
-        "path": "/api/transfer-owner",
+        "path": "/api/token/transfer-owner",
         "methods": [
             "POST"
         ]
     },
     {
-        "path": "/api/kill-token",
+        "path": "/api/token/kill-token",
+        "methods": [
+            "GET"
+        ]
+    },
+    {
+        "path": "/api/eth",
+        "methods": [
+            "GET"
+        ]
+    },
+    {
+        "path": "/api/eth/balance/:address",
+        "methods": [
+            "GET"
+        ]
+    },
+    {
+        "path": "/api/eth/block",
+        "methods": [
+            "GET"
+        ]
+    },
+    {
+        "path": "/api/eth/create-account",
+        "methods": [
+            "GET"
+        ]
+    },
+    {
+        "path": "/api/eth/accounts",
         "methods": [
             "GET"
         ]
