@@ -1,8 +1,11 @@
 # Threshodl Token
 
+- [Notes](#notes)
+
+- [Endpoint Notes](#endpoint-notes)
+
 - [List of All API Endpoints](#endpoints)
 
-- [Notes](#notes)
 
 ## Getting Started
 
@@ -193,7 +196,9 @@ bash bin/truffle-migrate-ropsten
 
 1. This api uses web3 for interacting with the node, but manual curl commands can be used via [RPC calls](https://github.com/ethereum/wiki/wiki/JSON-RPC). Test the `bash bin/rpc-call` to test an rpc call.
 
-2. the contracts are compiled into the `token-contract/build/contracts` directory and it was added to `/gitignore` as a **comment** to facilitate migrating new contracts during development when using a local private node. But when coming back to the default contract simple compile and migrate or migrate with reset to overwrite existing contracts. There is also a `deployed-contracts` directory that can store the artifact files (e.g.Token.json) if you want to keep different deployments to interact with your contracts in the future. Read [here](#vc) for storing contracts in version control.
+2. Install a solidity extension into your choosen editor when developing contracts
+
+3. the contracts are compiled into the `token-contract/build/contracts` directory and it was added to `/gitignore` as a **comment** to facilitate migrating new contracts during development when using a local private node. But when coming back to the default contract simple compile and migrate or migrate with reset to overwrite existing contracts. There is also a `deployed-contracts` directory that can store the artifact files (e.g.Token.json) if you want to keep different deployments to interact with your contracts in the future. Read [here](#vc) for storing contracts in version control.
 
 ## Scripts
 
@@ -272,6 +277,93 @@ Question about storing artifact files (e.g. Token.json) after truffle compiles c
 
 transferOwnership & kill functions both catch an 'invalid address'. The response it 200 with `false` boolean indicating request failed. 
 
+## Endpoint Notes
+
+### Send Transaction info
+
+
+You can get information about the transaction you want to send before sending it. Information like gas, gas price, amount in wei and ether, etc.
+
+send the transaction object to the `api/eth/send-tx-info` endpoint
+```
+{
+  "from": "0x451E62137891156215d9D58BeDdc6dE3f30218e7",
+  "to": "0xAb7faf7bDAE1B9D0F757e2a8aB120619b388C4c6",
+  "value": "0.1",
+  "gas":"41000",
+  "gasPrice": "high"
+}
+```
+output
+```
+{
+    "amountToSendEther": "0.1",
+    "amountToSendWei": "100000000000000000",
+    "gasPrices": {
+        "low": 7,
+        "medium": 9,
+        "high": 14
+    },
+    "gasPriceTypeDefault": "low",
+    "gasPriceDefault": 7000000000,
+    "gasPriceTypeCustom": "high",
+    "gasPrice": 14000000000,
+    "estimatedGas": 21000,
+    "gas": "41000",
+    "params": {
+        "from": "0x451e62137891156215d9d58beddc6de3f30218e7",
+        "to": "0xab7faf7bdae1b9d0f757e2a8ab120619b388c4c6",
+        "gasPrice": "0x342770c00",
+        "value": "0x16345785d8a0000"
+    },
+    "paramsUpdated": {
+        "from": "0x451E62137891156215d9D58BeDdc6dE3f30218e7",
+        "to": "0xAb7faf7bDAE1B9D0F757e2a8aB120619b388C4c6",
+        "gas": "41000",
+        "gasPrice": 14000000000,
+        "value": "100000000000000000"
+    }
+}
+```
+
+You can change the following:
+
+- from - takes a valid ethereum address
+- to - takes a valid ethereum address
+- value - takes a string number in ether
+- gas - you can send it without gas to see the estimatedGas and then modify it from there
+- gasPrice - ["low", "medium", "high"] are the options and you can see that in the gasPrice{} object that is outputted. So if you don't pass `"gasPrice": "high"` from the above example the transaction will return `gasPriceDefault` value.
+
+The rest of the parameters are for your information:
+
+- gasPrices{} - taken from `https://ethgasstation.info/json/ethgasAPI.json`
+- gasPriceTypeDefault - default gas using `gasPrices.low * 1000000000;`
+- estimatedGas - taken from `web3.eth.estimateGas(txObject)`, where `txObject` is created from the other parameters and is shown as `params`
+- params - transaction object that is used to calculate the estimated gas
+- paramsUpdated - is the final transaction object that will be used for sending the transaction
+
+Note: you may notice that `nonce` is not a parameter accepted for changing because it is optional for the `sendTransaction()` function. If required it needs to be updated in the api to accept it as a parameter.
+
+### Send Transaction
+
+Sending a transaction uses the `paramsUpdated` object and passes it to `web3.eth.sendTransaction(paramsUpdated)`
+
+output 
+
+```
+{
+    "transactionHash": "0x7c948c9d17c80ae0e89074eddab614c2ce24d6185b21f9aa2d9fb03d393d3dec",
+    "transactionIndex": 0,
+    "blockHash": "0x5ea250d8c2a1e4e9cead27a457f79cce084a494f9f3009e9f806d7a81030296d",
+    "blockNumber": 12,
+    "gasUsed": 21000,
+    "cumulativeGasUsed": 21000,
+    "contractAddress": null,
+    "logs": [],
+    "status": true,
+    "logsBloom": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+}
+```
 
 ## Endpoints
 

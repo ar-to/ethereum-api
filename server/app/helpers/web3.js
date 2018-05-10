@@ -14,7 +14,7 @@ web3 = new Web3(web3Provider);
 Web3Object = {
   web3Provider: web3Provider,
   web3: web3,
-  bigNumber: BigNumber,
+  BigNumber: BigNumber,
 }
 
 module.exports = Web3Object;

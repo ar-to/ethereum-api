@@ -20,5 +20,8 @@ router.get('/balance/:address', ethereumApi.getBalance);
 router.get('/block', ethereumApi.getBlockNumber);
 router.get('/create-account', ethereumApi.createAccount);
 router.get('/accounts', ethereumApi.getAccounts);
+// router.get('/tx-info', ethereumApi.getTransactionInfo);
+router.post('/send-tx-info', ethereumApi.sendTransactionInfo);
+router.post('/send-tx', ethereumApi.sendTransaction);
 
 module.exports = router;
