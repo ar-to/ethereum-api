@@ -53,11 +53,11 @@ GANACHE_MIGRATE_ADDRESS=0xcf068555df7eab0a9bad97829aa1a187bbffbdba
 ROPSTEN_MIGRATE_ADDRESS=0xa8ebf36b0a34acf98395bc5163103efc37621052
 ```
 
-Currently, the best way to change the network you want to have the API connect web3 to, is to change the `NODE_URL`. So you can have multiple values but only have one uncommented. Below the second will be used.
+Currently, the best way to change the network you want to have the API connect web3 to, is to change the `NODE_URL`. So you can have multiple values but only have one uncommented. The example below will make the second url enabled.
 
 ```
 #NODE_URL=http://127.0.0.1:7545
-NODE_URL=http://10.10.0.163:8545
+NODE_URL=http://127.0.0.1:8545
 ```
 
 **Remember to restart your server after changing environment variables. If running nodemon run `npm run nodemon` again**

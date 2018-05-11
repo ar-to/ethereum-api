@@ -95,23 +95,23 @@ Token = {
           tokenInstance.name(),
           tokenInstance.symbol(),
           tokenInstance.decimals(),
-          tokenInstance.totalSupply()
+          tokenInstance.totalSupply(),
+          tokenInstance.balanceOf(value.owner)
         ]
-        Promise.all(infoArray).then((values) => {
+        return Promise.all(infoArray).then((values) => {
           obj.tokenName = values[0];
           obj.tokenSymbol = values[1];
           obj.tokenDecimals = values[2];
-          obj.tokenInitialSupply = values[3];
+          obj.totalSupply = values[3];
+          obj.tokenBalance = values[4];
+          return obj;
         })
         //initial variable but changed by addTokenToTotalSupply()
         // tokenInstance.INITIAL_SUPPLY().then((value) => {
         //   obj.tokenInitialSupply = value;
         // });
-        return tokenInstance.balanceOf(value.owner);
       }).then(function (result) {
-        // obj.tokenBalance = result.toFixed(obj.tokenDecimals);
-        obj.tokenBalance = result;
-        return obj;
+        return result;
       }).catch(function (err) {
         console.log(err.message);
         return obj.error = err.message;

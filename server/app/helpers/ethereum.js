@@ -149,7 +149,6 @@ async function processTxInfoData(txObject) {
     // get gas prices 
     const getCurrentGasPrices = async () => {
       let response = await axios.get(gasAPI)
-      // let response = await axios.get('https://ethgasstation.info/json/ethgasAPI.json')
       let prices = {
         low: response.data.safeLow / 10,
         medium: response.data.average / 10,
@@ -163,12 +162,17 @@ async function processTxInfoData(txObject) {
     let gasPriceTypeCustom = txObject.gasPrice != null ? txObject.gasPrice.toLowerCase() : null;
     // validate gasPrice
     let gasPrice;
-    if (gasPrices[gasPriceTypeCustom] === undefined){
+    if(gasPriceTypeCustom == null) {
       gasPrice = gasPriceDefault
-      reject(new Error('gasPrice is invalid'))
     } else {
-      gasPrice = gasPrices[gasPriceTypeCustom] * 1000000000;
+      if (gasPrices[gasPriceTypeCustom] === undefined){
+        gasPrice = gasPriceDefault
+        reject(new Error('gasPrice is invalid'))
+      } else {
+        gasPrice = gasPrices[gasPriceTypeCustom] * 1000000000;
+      }
     }
+    console.log('gasPrice',gasPrice)
     // let gasPrice = gasPriceTypeCustom != null ? gasPrices[gasPriceTypeCustom] * 1000000000 : gasPriceDefault;
 
     // set tx object to calculate transaction gas
