@@ -18,9 +18,9 @@ var router = express.Router();
 router.get('/', ethereumApi.getTest);
 router.get('/balance/:address', ethereumApi.getBalance);
 router.get('/block', ethereumApi.getBlockNumber);
+router.get('/block/:blockNumber', ethereumApi.getBlock);
 router.get('/create-account', ethereumApi.createAccount);
 router.get('/accounts', ethereumApi.getAccounts);
-// router.get('/tx-info', ethereumApi.getTransactionInfo);
 router.post('/send-tx-info', ethereumApi.sendTransactionInfo);
 router.post('/send-tx', ethereumApi.sendTransaction);
 

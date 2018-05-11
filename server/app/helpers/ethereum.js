@@ -29,7 +29,8 @@ Ethereum = {
     return e;
   },
   /**
-   * Get block
+   * Get latest block
+   * @return {(Promise|Object)}
    */
   getBlockNumber: async function () {
     let obj = {};
@@ -41,6 +42,24 @@ Ethereum = {
         console.log(err.message);
         return obj.error = err.message;
       });
+    return e;
+  },
+  /**
+   * get the block data for provide block number
+   * @param {number} blockNumber 
+   * @return {(Promise|Object)} either error or block data
+   */
+  getBlock: async function (blockNumber) {
+    let obj = {};
+    if(isNaN(blockNumber)) {
+      obj.error = `'${blockNumber}' is an invalid block number`;
+      return obj;
+    }
+    let e = await web3.eth.getBlock(blockNumber)
+      .then(function (result) {
+        obj = result;
+        return obj;
+      })
     return e;
   },
   /**

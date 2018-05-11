@@ -26,6 +26,11 @@ module.exports = {
       return res.send(value)
     });
   },
+  getBlock: function (req, res, next) {
+    ethereum.getBlock(req.params.blockNumber).then((value) => {
+      return res.send(value)
+    })
+  },
   createAccount: function (req, res, next) {
     ethereum.createAccount().then((value) => {
       return res.send(value)
@@ -46,11 +51,11 @@ module.exports = {
   },
   sendTransaction: async function (req, res, next) {
     await validateBody(res, req.body)
-    .then((obj) => {
-      ethereum.sendTransaction(obj).then((value) => {
-        return (value.error != null ? res.status(404).send(value).end() : res.send(value))
-      });
-    })
+      .then((obj) => {
+        ethereum.sendTransaction(obj).then((value) => {
+          return (value.error != null ? res.status(404).send(value).end() : res.send(value))
+        });
+      })
   },
 }
 
