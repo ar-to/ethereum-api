@@ -19,4 +19,6 @@ router.route('/')
 .get(api.getTest)
 .post(api.postTest)
 
+router.get('/network', api.networkInfo);
+
 module.exports = router;

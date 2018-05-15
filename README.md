@@ -78,6 +78,9 @@ Add connections to `config/connections.json`, and set the name of the network yo
     "connectApi": "ganache",
     "ganache":{
       "url": "http://127.0.0.1:7545",
+      "networkId": "5777",
+      "networkName": "ganache",
+      "networkType": "testrpc",
       "token": {
         "ownerAddress": "0x451E62137891156215d9D58BeDdc6dE3f30218e7",
         "tokenContractAddress": "0x4c59b696552863429d25917b52263532af6e6078",
@@ -455,6 +458,12 @@ output
         ]
     },
     {
+        "path": "/api/network",
+        "methods": [
+            "GET"
+        ]
+    },
+    {
         "path": "/api/token",
         "methods": [
             "GET"
@@ -590,12 +599,6 @@ output
         "path": "/api/eth/send-tx",
         "methods": [
             "POST"
-        ]
-    },
-    {
-        "path": "/api/eth/wallet",
-        "methods": [
-            "GET"
         ]
     },
     {
