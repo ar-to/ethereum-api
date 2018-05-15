@@ -1,15 +1,64 @@
 # Threshodl Token
 
+## Table of Contents
+
+- [Quick Start](#quick-start)
+- Getting Started
+  - [Run Private Test Node](#run-private-test-node)
+  - [Config](#config)
+  - [Environment Variables](#environment-variablese)
+  - [Truffle Token Contract](#truffle-token-contract)
+  - [Development local node](#development-local-node)
+  - [Testnet node](#testnet-node)
+  - [Run truffle commands](#run-truffle-commands)
+  - [Server](#server)
+  - [Adding Networks](#adding-networks)
 - [Notes](#notes)
-
+- [Scripts](#scripts)
+- [Bash](#bash)
+- [Helpers](#helpers)
+- [Keystore](#keystore)
+- [Error Debugging](#error-debugging)
+- [Sample Contracts](#sample-contracts)
+- [Version Control]($version-control)
 - [Endpoint Notes](#endpoint-notes)
-
+  - [Get Block Info](#get-block-info)
+  - [Get Transaction Info](#get-transaction-info)
+  - [Send Transaction](#send-transaction)
 - [List of All API Endpoints](#endpoints)
 
+## Quick Start
+
+Install [Ganache](http://truffleframework.com/ganache/) to have a local blockchain and start it. You will see 10 address and a mnemonic phrase. Copy `RPC Server` URL, e.g `HTTP://127.0.0.1:7545`
+
+```
+brew cask install ganache
+```
+
+Create `.env` in root
+
+```
+NODE_URL=http://127.0.0.1:7545
+```
+
+Clone repo and start server
+
+```
+git clone git@github.com:ar-to/ethereum-api.git
+cd ethereum-api
+npm install
+npm start
+```
+in new terminal
+```
+curl http://localhost:3000/api/eth/syncing
+{"nodeSynced":true}
+```
 
 ## Getting Started
 
-Please read notes for important information before developing.
+Please read [notes](#notes) for important information before developing.
+
 
 ### Run Private Test Node
 
@@ -20,44 +69,36 @@ brew cask install ganache
 ```
 Open application and it will automatically create 10 addresses. Save the mnemonic phrase if you want to use it again. It will be set the url to `http://127.0.0.1:7545`
 
+### Config
+Add connections to `config/connections.json`, and set the name of the network you want to use for the API using `"connectApi": "network-name",`
+
+```
+{
+  "networks": {
+    "connectApi": "ganache",
+    "ganache":{
+      "url": "http://127.0.0.1:7545",
+      "token": {
+        "ownerAddress": "0x451E62137891156215d9D58BeDdc6dE3f30218e7",
+        "tokenContractAddress": "0x4c59b696552863429d25917b52263532af6e6078",
+        "migrateContractAddress": "0xcf068555df7eab0a9bad97829aa1a187bbffbdba"
+      }
+    },
+    "ropsten":{},
+    "mainnet":{}
+  }
+}
+```
+
+Copy the same parameters from ganache above to other networks.
+
 ### Environment Variables
 
-Create `.env` file in the root directory and add the following:
+You can change the port for the server and overwrite the node url from the connections.json by adding it in a `.env` file at the root directory.
 
 ```
-#
-# Required by API
-# to connect to correct node
-# add NODE_URL values for different networks but have only one uncommented for use
-# token contract address required for instantiating contract to use its functions
-# owner address required when /api/balance
-#
-
-# Ganache GUI local Private node
-#NODE_URL=http://127.0.0.1:7545
-#TOKEN_CONTRACT_ADDRESS=0x4c59b696552863429d25917b52263532af6e6078
-#OWNER_ACCOUNT=0x451E62137891156215d9D58BeDdc6dE3f30218e7
-
-# Ropsten
-NODE_URL=http://127.0.0.1:8545
-TOKEN_CONTRACT_ADDRESS=0x3e672122bfd3d6548ee1cc4f1fa111174e8465fb
-OWNER_ACCOUNT=0x83634a8eaadc34b860b4553e0daf1fac1cb43b1e
-
-#
-# Reference
-# add variables below for potential use
-# migration address is here for reference and used by truffle
-#
-
-GANACHE_MIGRATE_ADDRESS=0xcf068555df7eab0a9bad97829aa1a187bbffbdba
-ROPSTEN_MIGRATE_ADDRESS=0xa8ebf36b0a34acf98395bc5163103efc37621052
-```
-
-Currently, the best way to change the network you want to have the API connect web3 to, is to change the `NODE_URL`. So you can have multiple values but only have one uncommented. The example below will make the second url enabled.
-
-```
-#NODE_URL=http://127.0.0.1:7545
-NODE_URL=http://127.0.0.1:8545
+PORT=4000
+NODE_URL=http://127.0.0.1:7545
 ```
 
 **Remember to restart your server after changing environment variables. If running nodemon run `npm run nodemon` again**
@@ -81,7 +122,9 @@ First add the same OWNER_ACCOUNT address from the environment variable into the 
   }
 ```
 
-#### Testnet node (e.g. Ropsten, etc)
+#### Testnet node 
+
+(e.g. Ropsten, etc)
 
 See section on adding new networks
 
@@ -204,7 +247,10 @@ bash bin/truffle-migrate-ropsten
 
 Scripts are added for convenience to allow commands to be performs from the root and for testing.
 
-- rpc-call - a curl command via an rpc call to communicated to a node. Remember to change the url:port to connect to the correct node and address when using the `eth_getBalance` method.
+- rpc-call - a curl command via an rpc call to communicated to a node. Remember to change the url:port to connect to the correct node and address when using the `eth_getBalance` method or pass it as an argument:
+```
+sh bin/rpc-call http://127.0.0.1:7545
+```
 
 - bash bin/truffle-compile
 
@@ -261,13 +307,25 @@ gas cost estimation = 0.0449887 ether
 
 Read about what is a [keystore](https://medium.com/@julien.m./what-is-an-ethereum-keystore-file-86c8c5917b97) file and how to make one. Above keystore taken from [here](https://github.com/hashcat/hashcat/issues/1228) If using the geth client for creating your node, you can run `geth account new`, enter your password and check the `keystore/` directory for the keystore file. This directory is next to the chaindata where you are storing the blockchain data.
 
+## Error Debugging
+
+Setting up can be somewhat complicated if not tedious. Maybe in future releases there will be much more efficient way to setup but for now fixing and understanding error is best to guarantee everything is running correctly. Below are a few warnings or error you may see and possible ways to solve them. More added as they are found. Keep in mind error do not necessarily mean bugs, but it does not mean a bug is not present. If an error turns out to be a bug file an issue and your solution. Thanks.
+
+- `Invalid JSON RPC response: ""` - This may show as a response from testing the api endpoint the first time you are connecting to a node. It is a failure to connect by web3 provider. Solution:
+    1. restart your server
+    2. Check you have the correct node url inside the `.env` file
+    3. Make an RPC call to the node using the `bin/rpc-call` script to test for connection. See [scripts section](#scripts) for details
+    4. wait until the connection is successful and try the endpoint you got the error again
+
+
+
 ## Sample Contracts
 
 Sample constracts are used for reference and can be found in `token-contract/samples`. 
 
 - advancedToken.sol - sample token code that has been fixed to meet solidity v0.4.23. This can be tested by adding it into Mist app. Deploy using TokenERC20 token name.
 
-## VC
+## Version Control
 Question about storing artifact files (e.g. Token.json) after truffle compiles contracts with abi and contract addresses for different networks. Community in gitter (chat app) recommended to add to VC but optional not to.
 
 - [stackexchange](https://ethereum.stackexchange.com/questions/19486/storing-a-truffle-contract-interface-in-version-control) - recommendation to store outside
@@ -277,14 +335,28 @@ Question about storing artifact files (e.g. Token.json) after truffle compiles c
 
 transferOwnership & kill functions both catch an 'invalid address'. The response it 200 with `false` boolean indicating request failed. 
 
+`api/eth/tx-from-block/hashStringOrNumber` endpoint seems to fail when connected to Ropsten Testnet but not with ganache local node
+
+
 ## Endpoint Notes
 
-### Send Transaction info
+The ethereum endpoint for this API uses the [web3js](http://web3js.readthedocs.io/en/1.0/) so parameters for a web3 method is normally supported by the endpoint unless otherwise specified. 
+
+### Get Block Info
+
+The following endpoints can be used to get information about blocks and even transactions.
+
+- `/api/eth/tx:txHash` : get transaction details by the transaction hash
+- `api/eth/tx-from-block/hashStringOrNumber` : hashStringOrNumber can be same as in the [web3 docs](http://web3js.readthedocs.io/en/1.0/web3-eth.html#gettransactionfromblock), e.g. `/latest` or `0xa343d89bb0447c8a22c8ce73bf35504d9363e234b2a1a8229d40b69ce3439fc5`. See [bug](#bugs-to-fix) for problem when using it in Ropsten
+
+- `api/eth/block/2?showTx=true&useString=latest` : 1 is the blocknumber, the query `showTx` will show the transaction object in the output when set to true, and the query `useString` will overwrite the block number and use one of the strings used in the [getBlock api](http://web3js.readthedocs.io/en/1.0/web3-eth.html#getblock) such as `latest` to get the most recent block.
+
+### Get Transaction info
 
 
 You can get information about the transaction you want to send before sending it. Information like gas, gas price, amount in wei and ether, etc.
 
-send the transaction object to the `api/eth/send-tx-info` endpoint
+send a POST request with transaction object below to the `api/eth/send-tx-info` endpoint
 ```
 {
   "from": "0x451E62137891156215d9D58BeDdc6dE3f30218e7",
@@ -461,6 +533,12 @@ output
         ]
     },
     {
+        "path": "/api/eth/syncing",
+        "methods": [
+            "GET"
+        ]
+    },
+    {
         "path": "/api/eth/balance/:address",
         "methods": [
             "GET"
@@ -473,6 +551,24 @@ output
         ]
     },
     {
+        "path": "/api/eth/block/:blockNumber",
+        "methods": [
+            "GET"
+        ]
+    },
+    {
+        "path": "/api/eth/tx/:transactionHash",
+        "methods": [
+            "GET"
+        ]
+    },
+    {
+        "path": "/api/eth/tx-from-block/:hashStringOrNumber",
+        "methods": [
+            "GET"
+        ]
+    },
+    {
         "path": "/api/eth/create-account",
         "methods": [
             "GET"
@@ -480,6 +576,24 @@ output
     },
     {
         "path": "/api/eth/accounts",
+        "methods": [
+            "GET"
+        ]
+    },
+    {
+        "path": "/api/eth/send-tx-info",
+        "methods": [
+            "POST"
+        ]
+    },
+    {
+        "path": "/api/eth/send-tx",
+        "methods": [
+            "POST"
+        ]
+    },
+    {
+        "path": "/api/eth/wallet",
         "methods": [
             "GET"
         ]

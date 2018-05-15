@@ -4,11 +4,22 @@ const BigNumber = Web3.BigNumber;
 const axios = require('axios');
 
 const gasAPI = "https://ethgasstation.info/json/ethgasAPI.json";
-// var obj = {};//used for passing data back to controller
 var e; //await function
 
 Ethereum = {
-  defaultAccount: web3.eth.defaultAccount,//not working
+  isSyncing: async function () {
+    let obj = {};
+    return await web3.eth.isSyncing()
+      .then(function (result) {
+        obj.nodeSynced = result == false ? true : result;
+        return obj;
+      })
+      .catch((err) => {
+        // console.log('isSyncing error:', err.message);
+        obj.error = err.message;
+        return obj;
+      })
+  },
   /**
    * Get ethereum and wei balances for a valid address
    * @param {string} address 
@@ -20,7 +31,7 @@ Ethereum = {
       .then(function (result) {
         obj.weiBalance = result;
         obj.etherBalance = web3.utils.fromWei(result, 'ether');
-        console.log('obj', obj);
+        // console.log('obj', obj);
         return obj;
       }).catch(function (err) {
         console.log(err.message);
@@ -45,22 +56,66 @@ Ethereum = {
     return e;
   },
   /**
+   * Get transaction details by hash
+   * @param {string} transactionHash hash for a transaction
+   * @return {(Promise|Object)}
+   */
+  getTransaction: async function (transactionHash) {
+    let obj = {};
+    return await web3.eth.getTransaction(transactionHash)
+      .then(function (result) {
+        obj.accounts = result;
+        return obj;
+      }).catch(function (err) {
+        // console.log('getTransaction', err.message);
+        obj.error = err.message;
+        return obj;
+      });
+  },
+  /**
+   * Similar to getBlock 
+   * NOTE: seems to only work without error locally with ganache node
+   * ERROR in Ropsten Testnet: "Returned error: invalid argument 1: json: cannot unmarshal non-string into Go value of type hexutil.Uint"
+   * @param {number} hashStringOrNumber is the block hash or block number
+   * @return {(Promise|Object)}
+   */
+  getTransactionFromBlock: async function (hashStringOrNumber) {
+    let obj = {};
+    return await web3.eth.getTransactionFromBlock(hashStringOrNumber)
+      .then(function (result) {
+        obj.accounts = result;
+        return obj;
+      }).catch(function (err) {
+        // console.log('ttt', err.message);
+        obj.error = err.message;
+        return obj;
+      });
+  },
+  /**
    * get the block data for provide block number
-   * @param {number} blockNumber 
+   * @param {number} blockNumber is the block number of block hash
+   * @param {boolean} showTxObject is a truth value to show transaction hash only or the entire object in the output
+   * @param {string} useString overwrites the blocknumber to use the string from the api: http://web3js.readthedocs.io/en/1.0/web3-eth.html#getblock
    * @return {(Promise|Object)} either error or block data
    */
-  getBlock: async function (blockNumber) {
+  getBlock: async function (blockNumber, showTxObject, useString) {
     let obj = {};
-    if(isNaN(blockNumber)) {
+    if (isNaN(blockNumber)) {
       obj.error = `'${blockNumber}' is an invalid block number`;
       return obj;
     }
-    let e = await web3.eth.getBlock(blockNumber)
+    blockNumber = useString != null ? useString : blockNumber;
+    showTxObject = showTxObject != null ? showTxObject : false;
+    return await web3.eth.getBlock(blockNumber, showTxObject)
       .then(function (result) {
         obj = result;
         return obj;
       })
-    return e;
+      .catch((err) => {
+        // console.log('getBlock error:', err.message);
+        obj.error = err.message;
+        return obj;
+      })
   },
   /**
    * Generates new public address and private key and stores private key inside node
@@ -69,7 +124,7 @@ Ethereum = {
   createAccount: async function () {
     return new Promise(((resolve, reject) => {
       e = web3.eth.accounts.create();
-      console.log('new', e);
+      // console.log('new', e);
       resolve(e);
     }))
   },
@@ -84,8 +139,9 @@ Ethereum = {
         obj.accounts = result;
         return obj;
       }).catch(function (err) {
-        console.log(err.message);
-        return obj.error = err.message;
+        // console.log('ttt', err.message);
+        obj.error = err.message;
+        return obj
       });
     return e;
   },
@@ -116,7 +172,6 @@ Ethereum = {
     let obj = {};
     e = await processTxInfoData(txObject)
       .then(function (result) {
-        console.log('err', result.error)
         let e2 = web3.eth.sendTransaction(result.paramsUpdated)
         // .on('receipt', function(receipt){
         //   console.log('tx receipt',receipt);
@@ -162,17 +217,16 @@ async function processTxInfoData(txObject) {
     let gasPriceTypeCustom = txObject.gasPrice != null ? txObject.gasPrice.toLowerCase() : null;
     // validate gasPrice
     let gasPrice;
-    if(gasPriceTypeCustom == null) {
+    if (gasPriceTypeCustom == null) {
       gasPrice = gasPriceDefault
     } else {
-      if (gasPrices[gasPriceTypeCustom] === undefined){
+      if (gasPrices[gasPriceTypeCustom] === undefined) {
         gasPrice = gasPriceDefault
         reject(new Error('gasPrice is invalid'))
       } else {
         gasPrice = gasPrices[gasPriceTypeCustom] * 1000000000;
       }
     }
-    console.log('gasPrice',gasPrice)
     // let gasPrice = gasPriceTypeCustom != null ? gasPrices[gasPriceTypeCustom] * 1000000000 : gasPriceDefault;
 
     // set tx object to calculate transaction gas
@@ -188,10 +242,10 @@ async function processTxInfoData(txObject) {
     await web3.eth.estimateGas(params).then((price) => {
       estimatedGas = price;
     })
-    .catch((error,receipt) => {
-      estimatedGas = null;
-      reject(new Error('failed to estimate gas'))
-    });
+      .catch((error, receipt) => {
+        estimatedGas = null;
+        reject(new Error('failed to estimate gas'))
+      });
     // validate gas value from controller
     let gas = txObject.gas != null ? txObject.gas : estimatedGas;
     if (gas < estimatedGas) {

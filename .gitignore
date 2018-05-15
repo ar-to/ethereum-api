@@ -60,6 +60,10 @@ typings/
 # contracts after truffle compile
 #token-contract/build
 
+# Config for adding network connections to nodes
+config/connections.json
+!config/.gitkeep
+
 # network wallets as json files with keystore and password each
 network-wallets/*
 !network-wallets/.gitkeep

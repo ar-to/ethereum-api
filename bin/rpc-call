@@ -1,6 +1,14 @@
 #!/usr/bin/env bash
 
-curl -X POST -H "Content-Type: application/json" --data '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":83}' http://127.0.0.1:7545
+#
+# ARG1 is the url of node to connect to
+# e.g. sh bin/rpc-call http://127.0.0.1:7545
+#
+ARG1=$1
+echo $ARG1
+
+curl -X POST -H "Content-Type: application/json" --data '{"jsonrpc":"2.0","method":"eth_syncing","params":[],"id":1}' $ARG1
+# curl -X POST -H "Content-Type: application/json" --data '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":83}' $ARG1
 
 #
 # balance returns a hexadecimal

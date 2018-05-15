@@ -6,6 +6,11 @@ module.exports = {
   getTest: function (req, res, next) {
     res.send("Ethereum API")
   },
+  isSyncing: function (req, res, next) {
+    ethereum.isSyncing().then((value) => {
+      return (value.error != null ? res.status(404).send(value).end() : res.send(value));
+    });
+  },
   getBalance: function (req, res, next) {
     if (req.params) {
       let address = "";
@@ -27,9 +32,21 @@ module.exports = {
     });
   },
   getBlock: function (req, res, next) {
-    ethereum.getBlock(req.params.blockNumber).then((value) => {
+    let showTx = req.query.showTx != null ? req.query.showTx : false;
+    let useString = req.query.useString != null ? req.query.useString : null;
+    ethereum.getBlock(req.params.blockNumber, showTx, useString).then((value) => {
       return res.send(value)
     })
+  },
+  getTransaction: function (req, res, next) {
+    ethereum.getTransaction(req.params.transactionHash).then((value) => {
+      return res.send(value)
+    });
+  },
+  getTransactionFromBlock: function (req, res, next) {
+    ethereum.getTransactionFromBlock(req.params.hashStringOrNumber).then((value) => {
+      return res.send(value)
+    });
   },
   createAccount: function (req, res, next) {
     ethereum.createAccount().then((value) => {
