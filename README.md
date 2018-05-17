@@ -49,11 +49,14 @@ cd ethereum-api
 npm install
 npm start
 ```
-in new terminal
+in new terminal check if connected and what accounts you have on the node
 ```
 curl http://localhost:3000/api/eth/syncing
 {"nodeSynced":true}
+http://localhost:3000/api/eth/accounts
+{"accounts":["0xAb7faf7bDAE1B9D0F757e2a8aB120619b388C4c6","0x451E62137891156215d9D58BeDdc6dE3f30218e7","0x22B55D4cc5cE3E32Ee31B0684172E2BCE9F722e7","0x71c9625B0005F20d264775cfF8fc9FB1BEf96525","0x48E5A9807A1C862CeB00a9867c1b57dF02b8F1Fe","0xb7B3FaD7d81C5D2e09Dc464Fec36AC6b4e1B04d3","0x16e665134A1A3b048b2d9aFdB612Bd34CAc0F35C","0xcCFf4FEa69126b9E2c7ce02d69d7c5205657e722","0x032D0Fa0AD21aa5a50C6c6e13D9d14a9550457C5","0x20032730927fB07C46e20FD3725C1f77b04cd4ee"]}
 ```
+
 
 ## Getting Started
 
