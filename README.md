@@ -319,6 +319,7 @@ Setting up can be somewhat complicated if not tedious. Maybe in future releases 
     2. Check you have the correct node url inside the `.env` file
     3. Make an RPC call to the node using the `bin/rpc-call` script to test for connection. See [scripts section](#scripts) for details
     4. wait until the connection is successful and try the endpoint you got the error again
+- {package} `was compiled against a different Node.js version using` - best solution is to rebuild packages by first updating npm and node and then `npm rebuild`
 
 
 
