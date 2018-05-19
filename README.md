@@ -358,6 +358,20 @@ The following endpoints can be used to get information about blocks and even tra
 
 - `api/eth/block/2?showTx=true&useString=latest` : 1 is the blocknumber, the query `showTx` will show the transaction object in the output when set to true, and the query `useString` will overwrite the block number and use one of the strings used in the [getBlock api](http://web3js.readthedocs.io/en/1.0/web3-eth.html#getblock) such as `latest` to get the most recent block.
 
+### Create address
+
+GET request
+```
+http://localhost:3000/api/eth/create-account
+```
+
+### Get public address from private key
+
+GET request
+```
+http://localhost:3000/api/eth/get-account/{privatekey}
+```
+
 ### Get Transaction info
 
 
@@ -425,7 +439,7 @@ Note: you may notice that `nonce` is not a parameter accepted for changing becau
 
 ### Send Transaction
 
-Sending a transaction uses the `paramsUpdated` object and passes it to `web3.eth.sendTransaction(paramsUpdated)`
+Sending a transaction uses the `paramsUpdated` object and passes it to `web3.eth.sendTransaction(paramsUpdated)` and **requires a the from address to be an unlocked keystore address from inside the node**
 
 output 
 
@@ -441,6 +455,54 @@ output
     "logs": [],
     "status": true,
     "logsBloom": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+}
+```
+
+### Sign and Send Manually
+
+To sign with a private key and send the raw transaction follow these instructions for constructing your request:
+
+#### Get Transaction Info
+
+`http://localhost:3000/api/eth/send-tx-info` POST request with the following json to see your data:
+
+```
+{
+  "from": "0xA8D26e47CD1CB6Fc0803cA7D64D395bb38bc33de",
+  "to": "0x87E426ff6Deb0dF15CD98CAae0F63cf027D711b3",
+  "value": "0.002"
+}
+```
+
+If you are sending transactions from the same `from` address consecutively, you will need to increase the nonce by one so add it to your request
+
+```
+  "nonce": 1
+```
+You will see the a change in the nonce. You want to pay attention to the `paramsToSign` parameter because it will be used to sign the transaction next.
+
+#### Sign transaction
+
+`http://localhost:3000/api/eth/sign-tx` and pass the POST request json:
+
+```
+{
+  "from": "0xA8D26e47CD1CB6Fc0803cA7D64D395bb38bc33de",
+  "to": "0x87E426ff6Deb0dF15CD98CAae0F63cf027D711b3",
+  "value": "0.002",
+  "privateKey": "0x7f74657374320000000000000000000000000000000000000000000000000057"
+}
+```
+See [web3 api](http://web3js.readthedocs.io/en/1.0/web3-eth-accounts.html#signtransaction) for details on the out put and grab the `rawTransaction` parameter hex encoded transaction
+
+
+#### Send Signed Transaction
+
+`http://localhost:3000/api/eth/send-signed-tx` POST request with json:
+
+```
+{
+	"rawTransaction": "0xf86b04850218711a008252089487e426ff6deb0df15cd98caae0f63cf027d711b387071afd498d00008029a063542de27e66ea4a92f1270cbef3cd6ed9ad0b8bafbdcd0cedfcc25e2d731da7a05a7fb9dec086a6b1e4c0c19410b1b2f10a76c9f6198351731e92096534b67624"
 }
 ```
 
@@ -588,6 +650,12 @@ output
         ]
     },
     {
+        "path": "/api/eth/get-account/:privateKey",
+        "methods": [
+            "GET"
+        ]
+    },
+    {
         "path": "/api/eth/accounts",
         "methods": [
             "GET"
@@ -595,6 +663,18 @@ output
     },
     {
         "path": "/api/eth/send-tx-info",
+        "methods": [
+            "POST"
+        ]
+    },
+    {
+        "path": "/api/eth/sign-tx",
+        "methods": [
+            "POST"
+        ]
+    },
+    {
+        "path": "/api/eth/send-signed-tx",
         "methods": [
             "POST"
         ]

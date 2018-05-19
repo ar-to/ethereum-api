@@ -7,6 +7,27 @@ const gasAPI = "https://ethgasstation.info/json/ethgasAPI.json";
 var e; //await function
 
 Ethereum = {
+  /**
+   * validate private key by checking its public key is valid
+   * Can prob use a more standard way instead
+   * @param {string} privateKey is the string of the key passed
+   * @return {boolean} true is valid
+   */
+  validatePrivateKey: function (privateKey) {
+    if (privateKey != null) {
+      let accountObject = web3.eth.accounts.privateKeyToAccount(privateKey);
+      let publicAddress = accountObject.address;
+      if (web3.utils.isAddress(publicAddress)) {
+        return true;
+      }
+      return false;
+    }
+    return false;
+  },
+  /**
+   * syncing refers to the node being up to date with regards to the latest blockchain block number
+   * @return {(Object|boolean)} return true if up to date and object of current/highest block height otherwise
+   */
   isSyncing: async function () {
     let obj = {};
     return await web3.eth.isSyncing()
@@ -129,6 +150,18 @@ Ethereum = {
     }))
   },
   /**
+   * Gets the public address from private key
+   * @param {(string|hex)} privateKey is a valid private key
+   */
+  privateKeyToAccount: async function (privateKey) {
+    return new Promise(((resolve, reject) => {
+      // e = web3.eth.accounts.privateKeyToAccount("0x137450319cc21f2d3130a1b54f5796f1534a5b6f4c2cdd57e692f06518fa9d9a");
+      e = web3.eth.accounts.privateKeyToAccount(privateKey);
+      // console.log('new', e);
+      resolve(e);
+    }))
+  },
+  /**
    * Get all accounts generated and saved to node
    * @return {(Promise|Object.<Array>)} obj with array of all accounts
    */
@@ -161,6 +194,52 @@ Ethereum = {
         return obj;
       });
     return e;
+  },
+  /**
+   * Sign transaction with tx object and private key
+   * @param {Object} txObject is the transaction object
+   * @return {(Promise|Object)} signed object with rawTransaction data to be used for sending transaction
+   */
+  signTransaction: async function (txObject) {
+    let obj = {};
+    e = await processTxInfoData(txObject)
+      .then(function (result) {
+        return web3.eth.accounts.signTransaction(result.paramsToSign, txObject.privateKey)
+          .then(function (result) {
+            return result;
+          }).catch(function (err) {
+            // console.log('sign error', err.message);
+            obj.error = err.message;
+            return obj
+          });
+      }).catch(function (err) {
+        // console.log('tx info error', err.message);
+        obj.error = err.message
+        return obj;
+      });
+    return e;
+  },
+  /**
+   * Send signed transaction
+   * @param {string} signedTransactionData is the hex encoded data of the raw transaction to send
+   * @return {(Promise|Object)} 
+   */
+  sendSignedTransaction: async function (signedTransactionData) {
+    let obj = {};
+    return new Promise(((resolve, reject) => {
+      let e = web3.eth.sendSignedTransaction(signedTransactionData, (error, hash) => {
+        if (!error) {
+          // console.log('sent hash', hash);
+          obj.txHash = hash;
+          resolve(obj);
+        } else {
+          // console.log('sent error', error.message);
+          obj.error = error.message;
+          resolve(obj)
+        }
+      })
+      return e;
+    }));
   },
   /**
    * Send a transaction with node accounts to avoid using private keys
@@ -229,12 +308,26 @@ async function processTxInfoData(txObject) {
     }
     // let gasPrice = gasPriceTypeCustom != null ? gasPrices[gasPriceTypeCustom] * 1000000000 : gasPriceDefault;
 
+    // get nonce
+    let nonce;
+    await web3.eth.getTransactionCount(txObject.from).then((result) => {
+      // add nonce to current nonce if passed to request else return current nonce
+      if (txObject.nonce) {
+        nonce = result + txObject.nonce;
+      } else {
+        nonce = result;
+      }
+    })
+      .catch((error) => {
+        reject(new Error('failed to get nonce'))
+      });
+
     // set tx object to calculate transaction gas
     let params = {
       "from": txObject.from,
       "to": txObject.to,
       "gasPrice": gasPrice,
-      // "nonce": nonce,
+      "nonce": nonce,
       "value": wei
     };
     // get transaction gas
@@ -260,8 +353,22 @@ async function processTxInfoData(txObject) {
       "to": txObject.to,
       "gas": gas,
       "gasPrice": gasPrice,
-      // "nonce": nonce,
+      "nonce": nonce,
       "value": wei
+    };
+    let paramsToSign1 = {
+      "to": txObject.to,
+      "gas": gas,
+      "gasPrice": gasPrice,
+      "nonce": nonce,
+      "value": wei
+    };
+    let paramsToSign = {
+      "to": web3.utils.toHex(txObject.to),
+      "gas": web3.utils.toHex(gas),
+      "gasPrice": web3.utils.toHex(gasPrice),
+      "nonce": web3.utils.toHex(nonce),
+      "value": web3.utils.toHex(wei)
     };
     obj.amountToSendEther = txObject.value;
     obj.amountToSendWei = wei;
@@ -273,6 +380,8 @@ async function processTxInfoData(txObject) {
     obj.estimatedGas = estimatedGas;
     obj.gas = gas;
     obj.params = params;
+    obj.paramsToSign1 = paramsToSign1;
+    obj.paramsToSign = paramsToSign;
     obj.paramsUpdated = paramsUpdated;
     resolve(obj);
   })

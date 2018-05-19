@@ -53,6 +53,11 @@ module.exports = {
       return res.send(value)
     });
   },
+  privateKeyToAccount: function (req, res, next) {
+    ethereum.privateKeyToAccount(req.params.privateKey).then((value) => {
+      return res.send(value)
+    });
+  },
   getAccounts: function (req, res, next) {
     ethereum.getAccounts().then((value) => {
       return res.send(value)
@@ -65,6 +70,25 @@ module.exports = {
           return (value.error != null ? res.status(404).send(value).end() : res.send(value))
         });
       })
+  },
+  signTransaction: async function (req, res, next) {
+    await validateBody(res, req.body)
+      .then((obj) => {
+        let validPrivateKey = ethereum.validatePrivateKey(obj.privateKey);
+        if (validPrivateKey) {
+          ethereum.signTransaction(obj).then((value) => {
+            return (value.error != null ? res.status(404).send(value).end() : res.send(value))
+          });
+        }
+        else {
+          return res.status(404).send(new Object({ error: "Missing or Invalid private Key" })).end()
+        }
+      })
+  },
+  sendSignedTransaction: async function (req, res, next) {
+    ethereum.sendSignedTransaction(req.body.rawTransaction).then((value) => {
+      return (value.error != null ? res.status(404).send(value).end() : res.send(value))
+    });
   },
   sendTransaction: async function (req, res, next) {
     await validateBody(res, req.body)
@@ -80,6 +104,7 @@ async function validateBody(res, body) {
   return new Promise((resolve, reject) => {
     if (typeof body === 'object' && Object.keys(body).length != 0) {
       let obj = {};
+      obj.from = body.from != null ? body.from : null;
       obj.from = body.from != null && web3.utils.isAddress(body.from) ? body.from : obj.error = 'invalid address';
       obj.to = body.to != null && web3.utils.isAddress(body.to) ? body.to : obj.error = 'invalid address';
       obj.value = body.value != null && typeof body.value === 'string' ? body.value : obj.error = "value missing or is not a string number";
@@ -88,6 +113,8 @@ async function validateBody(res, body) {
       }
       obj.gas = body.gas != null ? body.gas : null;
       obj.gasPrice = body.gasPrice != null && typeof body.gasPrice === 'string' ? body.gasPrice : null;
+      obj.privateKey = body.privateKey != null ? body.privateKey : null;
+      obj.nonce = body.nonce != null ? body.nonce : null;
       if (obj.error) {
         res.status(404).send(obj).end();
       } else {
