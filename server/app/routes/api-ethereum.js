@@ -28,8 +28,17 @@ router.get('/accounts', ethereumApi.getAccounts);
 router.post('/send-tx-info', ethereumApi.sendTransactionInfo);
 router.post('/sign-tx',ethereumApi.signTransaction);//takes tx object and private key and creates rawData
 router.post('/send-signed-tx',ethereumApi.sendSignedTransaction);//send signed data
-// router.post('/sign-send-tx',ethereumApi.sendSignedTransaction);//signs and sends tx
+
 // these endpoints use the keystore addresses
 router.post('/send-tx', ethereumApi.sendTransaction);
+
+// Webhook subscriptions
+router.get('/subscribe-syncing', ethereumApi.subscribeSyncing)
+router.get('/subscribe-block', ethereumApi.subscribeBlock)
+router.post('/close-subscriptions/:subscriptionType', ethereumApi.closeSubscriptions)
+
+// Webhook test
+router.post('/post-to-webhook', ethereumApi.testWebhookPost)
+router.post('/webhook', ethereumApi.testWebhook)
 
 module.exports = router;

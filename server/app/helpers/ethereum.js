@@ -2,6 +2,12 @@ const Web3 = require('../helpers/web3.js');
 const web3 = Web3.web3;
 const BigNumber = Web3.BigNumber;
 const axios = require('axios');
+const Web3Websocket = require('../helpers/web3-websocket.js');
+const web3Socket = Web3Websocket.web3Socket;
+
+const Webhook = require('../helpers/webhook.js');
+const blockWebhookUrl = Webhook.blockWebhookUrl;
+const syncingWebhookUrl = Webhook.syncingWebhookUrl;
 
 const gasAPI = "https://ethgasstation.info/json/ethgasAPI.json";
 var e; //await function
@@ -261,6 +267,84 @@ Ethereum = {
         return obj;
       });
     return e;
+  },
+  /**
+   * Close a subscription by type
+   * @param {String} subscriptionType is the Ethereum.parameter used to store the instance of the subscription e.g. syncingSubscription
+   * @return {Promise}
+   */
+  closeSubscription: function (subscriptionType) {
+    return new Promise((resolve, reject) => {
+      if (Ethereum[subscriptionType] != null) {
+        return Ethereum[subscriptionType].unsubscribe(function (error, success) {
+          if (success) {
+            console.log(`Successfully unsubscribed! for ${subscriptionType}`, success);
+            resolve(`Successfully unsubscribed! for ${subscriptionType}`)
+          } else {
+            console.log('unsubscribed error:', error);
+            reject(`Could not unsubscribed. There was an error unsubscribing for ${subscriptionType}`)
+          }
+        })
+      } else {
+        reject(`no open subscriptions for ${subscriptionType}`)
+      }
+    })
+  },
+  /**
+   * Parameters used to store subscription instances
+   * which can then be used elsewhere or to unsubscribe
+   */
+  syncingSubscription: null,
+  blockSubscription: null,
+  /**
+   * Start a subscription to syncing and send data to webhook url
+   * @return {Promise}
+   */
+  subscribeSyncing: function () {
+    let obj = {};
+    return new Promise((resolve, reject) => {
+      return Ethereum.syncingSubscription = web3Socket.eth.subscribe('syncing', function (error, sync) {
+        if (error) reject(`There was an error creating a new webhook subscription to syncing: ${error}`)
+        if (!error) resolve(`Successfully created a webhook subscription to syncing`)
+      })
+        .on('data', function (sync) {
+          console.log('on syncing subscription: ', sync);
+          /**
+           * Send post request to url to initiate webhook
+           */
+          axios.post(syncingWebhookUrl, sync)
+            .catch(function (error) {
+              obj.error = 'There was an error sending post request to webhook url';
+              obj.config = error.config;
+              reject(obj);
+            });
+        });
+    })
+  },
+  /**
+   * Start a subscription to new blocks and send data to webhook url
+   * @return {Promise}
+   */
+  subscribeBlock: function () {
+    let obj = {};
+    return new Promise((resolve, reject) => {
+      return Ethereum.blockSubscription = web3Socket.eth.subscribe('newBlockHeaders', function (error, sync) {
+        if (error) reject(`There was an error creating a new webhook subscription to newBlockHeaders: ${error}`)
+        if (!error) resolve(`Successfully created a webhook subscription to newBlockHeaders`)
+      })
+        .on('data', function (sync) {
+          // console.log('on block subscription: ', sync);
+          /**
+           * Send post request to url to initiate webhook
+           */
+          axios.post(blockWebhookUrl, sync)
+            .catch(function (error) {
+              obj.error = 'There was an error sending post request to webhook url';
+              obj.config = error.config;
+              reject(obj);
+            });
+        })
+    });
   },
 }
 

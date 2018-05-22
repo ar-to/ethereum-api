@@ -2,9 +2,36 @@ const ethereum = require('../helpers/ethereum.js');
 const Web3 = require('../helpers/web3.js');
 const web3 = Web3.web3;
 
+const Web3Websocket = require('../helpers/web3-websocket.js');
+const web3Socket = Web3Websocket.web3Socket;
+const WebSocket = Web3Websocket.WebSocket;
+const axios = require('axios')
+
+const Webhook = require('../helpers/webhook.js');
+const testWebhookUrl = Webhook.testWebhookUrl;
+
 module.exports = {
   getTest: function (req, res, next) {
     res.send("Ethereum API")
+  },
+  testWebhookPost: function (req, res, next) {
+    let obj = {};
+    axios.post(testWebhookUrl, req.body)
+      .then(function (response) {
+        obj.message = 'sent to webhook url';
+        obj.data = response.data;
+        res.send(obj)
+      })
+      .catch(function (error) {
+        obj.error = 'There was an error sending post request to webhook url';
+        obj.config = error.config;
+        res.status(404).send(obj).end()
+      });
+  },
+  testWebhook: function (req, res, next) {
+    console.log('posted into webhook: ', req.body)
+    // res.send('req.body')
+    res.send(req.body)
   },
   isSyncing: function (req, res, next) {
     ethereum.isSyncing().then((value) => {
@@ -98,6 +125,42 @@ module.exports = {
         });
       })
   },
+  subscribeSyncing: function (req, res, next) {
+    let obj = {};
+    ethereum.subscribeSyncing()
+      .then((value) => {
+        // console.log('value block', value)
+        obj.subscriptionOpened = value;
+        res.send(obj)
+      }, (rej) => {
+        obj.subscriptionNotOpened = rej;
+        res.status(404).send(obj).end();
+      })
+  },
+  subscribeBlock: function (req, res, next) {
+    let obj = {};
+    ethereum.subscribeBlock()
+      .then((value) => {
+        // console.log('value block', value)
+        obj.subscriptionOpened = value;
+        res.send(obj)
+      }, (rej) => {
+        obj.subscriptionNotOpened = rej;
+        res.status(404).send(obj).end();
+      })
+  },
+  closeSubscriptions: function (req, res, next) {
+    let obj = {};
+    obj.subscriptionType = req.params.subscriptionType;
+
+    ethereum.closeSubscription(obj.subscriptionType).then((value) => {
+      obj.closed = value;
+      res.send(obj);
+    }, (rej) => {
+      obj.notClosed = rej;
+      res.send(obj);
+    })
+  }
 }
 
 async function validateBody(res, body) {

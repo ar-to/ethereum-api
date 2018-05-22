@@ -21,10 +21,13 @@
 - [Error Debugging](#error-debugging)
 - [Sample Contracts](#sample-contracts)
 - [Version Control]($version-control)
+- [Connections](#Connections)
 - [Endpoint Notes](#endpoint-notes)
   - [Get Block Info](#get-block-info)
   - [Get Transaction Info](#get-transaction-info)
   - [Send Transaction](#send-transaction)
+- [Webhook](#webhook)
+- [Websockets](#websockets)
 - [List of All API Endpoints](#endpoints)
 
 ## Quick Start
@@ -338,11 +341,53 @@ Question about storing artifact files (e.g. Token.json) after truffle compiles c
 - [stackexchange](https://ethereum.stackexchange.com/questions/19486/storing-a-truffle-contract-interface-in-version-control) - recommendation to store outside
 - [artifact-updates](https://github.com/trufflesuite/artifact-updates) - community repo for updating some issues with doing this.
 
+## Connections
+
+Full example of `connections.json`
+
+```
+{
+  "networks": {
+    "connectApi": "ropsten",
+    "ganache":{
+      "url": "http://127.0.0.1:7545",
+      "websocketUrl": "'ws://localhost:7545",
+      "networkId": "5777",
+      "networkName": "ganache",
+      "networkType": "testrpc",
+      "token": {
+        "ownerAddress": "0x451E62137891156215d9D58BeDdc6dE3f30218e7",
+        "tokenContractAddress": "0x4c59b696552863429d25917b52263532af6e6078",
+        "migrateContractAddress": "0xcf068555df7eab0a9bad97829aa1a187bbffbdba"
+      }
+    },
+    "ropsten":{
+      "url": "http://10.10.0.163:8545",
+      "websocketUrl": "ws://10.10.0.163:8546",
+      "blockWebhookUrl": "http://4f5a64ba.ngrok.io/api/eth/webhook",
+      "syncingWebhookUrl": "http://4f5a64ba.ngrok.io/api/eth/webhook",
+      "testWebhookUrl": "http://4f5a64ba.ngrok.io/api/eth/webhook",
+      "networkId": 3,
+      "networkName": "ropsten",
+      "networkType": "testnet",
+      "token": {
+        "ownerAddress": "0x83634a8eaadc34b860b4553e0daf1fac1cb43b1e",
+        "tokenContractAddress": "0x3e672122bfd3d6548ee1cc4f1fa111174e8465fb",
+        "migrateContractAddress": "0xa8ebf36b0a34acf98395bc5163103efc37621052"
+      }
+    },
+    "mainnet":{}
+  }
+}
+```
+
 ## Bugs to Fix
 
 transferOwnership & kill functions both catch an 'invalid address'. The response it 200 with `false` boolean indicating request failed. 
 
 `api/eth/tx-from-block/hashStringOrNumber` endpoint seems to fail when connected to Ropsten Testnet but not with ganache local node
+
+`` subscription does not seem to work and or do
 
 
 ## Endpoint Notes
@@ -504,6 +549,85 @@ See [web3 api](http://web3js.readthedocs.io/en/1.0/web3-eth-accounts.html#signtr
 {
 	"rawTransaction": "0xf86b04850218711a008252089487e426ff6deb0df15cd98caae0f63cf027d711b387071afd498d00008029a063542de27e66ea4a92f1270cbef3cd6ed9ad0b8bafbdcd0cedfcc25e2d731da7a05a7fb9dec086a6b1e4c0c19410b1b2f10a76c9f6198351731e92096534b67624"
 }
+```
+
+## Webhook
+
+Webhooks allow data to be sent as POST request to an external url specified in the `config/connections.json` iside the `blockWebhookUrl` paramater. 
+
+**To use this webhook you need to have websockets connected see [websockets](#websockets) for more information**
+
+```
+"ropsten":{
+  ...
+  "blockWebhookUrl": "http://4f5a64ba.ngrok.io/api/eth/webhook",
+  "testWebhookUrl": "http://4f5a64ba.ngrok.io/api/eth/webhook",
+  ...
+},
+```
+
+The `testWebhookUrl` parameter is used for testing but following these instructions:
+
+Run this api server and then run these
+
+```
+brew cask install ngrok
+ngrok http 3000
+```
+grab the ngrok url and add it the `testWebhookUrl` parameter e.g.`http://4f5a64ba.ngrok.io/api/eth/webhook`.
+
+Then open the debug url for ngrok e.g. `http://127.0.0.1:4040`
+
+Send a post request to `http://localhost:3000/api/eth/post-to-webhook` and watch two request show, one for the request and the second that send another POST request to the `/api/eth/webhook` endpoint
+
+## Websockets
+
+A websocket connection to the node is used to subscribe to events (e.g. new blocks, transactions, see [web3 api](http://web3js.readthedocs.io/en/1.0/web3-eth-subscribe.html)) and required to use the webhook feature which sends these subscriptions to a specified url.
+
+**Setup**
+
+You need to enable a websocket connection inside the node and add that url to the `connections.json`
+
+```
+```
+"ropsten":{
+  ...
+  "websocketUrl": "ws://10.10.0.163:8546",
+  ...
+},
+```
+
+or `.env` files which will overwrite the connections.json parameter
+
+```
+WEBSOCKET_URL=ws://127.0.0.1:8546
+```
+
+Websockets are an experimental feature, and the code can be found inside `server/app/helpers/web3-websocket.js`
+There is one `subscriptionType` that is corrently tested and working:
+
+```
+  blockSubscription
+```
+
+Another is to get status on the syncing of the node with the most current block. **Needs more testing so use with caution**
+ 
+```
+  syncingSubscription
+```
+
+**Create subscription**
+To create a subscription to block headers so every new block will be emitted and POSTed to a webhook url.
+
+```
+http://localhost:3000/api/eth/subscribe-block
+```
+
+**Remove Subscription**
+
+```
+http://localhost:3000/api/eth/close-subscriptions/blockSubscription
+http://localhost:3000/api/eth/close-subscriptions/syncingSubscription
 ```
 
 ## Endpoints
