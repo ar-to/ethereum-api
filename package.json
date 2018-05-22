@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "start": "nodemon ./bin/www",
+    "server": "node ./bin/www",
     "debug": "./bin/dev",
     "nodemon": "nodemon --inspect ./bin/www",
     "compile": "truffle compile"

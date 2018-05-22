@@ -19,7 +19,7 @@ module.exports = {
     });
   },
   getOwnerAddressBalance: async function (req, res, next) {
-    let owner = token.network.ownerAddress;
+    let owner = token.networkToken.ownerAddress;
     await token.getBalance(owner).then((value) => {
       return res.send(value)
     });

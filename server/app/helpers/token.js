@@ -2,6 +2,7 @@ const connections = require('../../../config/connections.json');
 const networkType = connections.networks.connectApi;
 const network = connections.networks[networkType]
 const networkUrl = connections.networks[networkType].url;
+const networkToken = connections.networks[networkType].token;
 const Web3 = require('web3');
 var BigNumber = require('bignumber.js');//handles web3 balances
 const TruffleContract = require("truffle-contract");
@@ -12,7 +13,7 @@ var web3;//instance
 var tokenArtifact;//json with ABI data
 var tokenContract;//instance
 var tokenInstance;//actual instance of token contract that allows access to contract functions
-const contractAddress = network.tokenContractAddress;
+const contractAddress = networkToken.tokenContractAddress;
 
 // Initialize web3 and set the provider to the testRPC.
 if (process.env.NODE_URL){
@@ -49,6 +50,7 @@ Token = {
 
   web3: web3,
   network: network,
+  networkToken: networkToken,
   tokenContract: tokenContract,
   contractJson: contractJson,
   accounts: web3.eth.getAccounts().then((accounts) => {

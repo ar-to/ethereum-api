@@ -21,7 +21,7 @@ router.route('/')
 
 // Web3 & Contract
 router.get('/get-web3-provider', tokenApi.getWeb3Provider);
-router.get('/get-contract', tokenApi.getContractJson);
+router.get('/get-contract', tokenApi.getContractJson);//get contract json
 router.get('/get-contract-instance', tokenApi.getContractInstance);
 
 // Web3 basic requests
@@ -31,7 +31,7 @@ router.get('/balance/:address', tokenApi.getAddressBalance);
 
 // Token Contract requests
 router.get('/owner', tokenApi.getTokenOwner);
-router.post('/add-tokens/:amount', tokenApi.addTokenToTotalSupply);
+router.post('/add-tokens/:amount', tokenApi.addTokenToTotalSupply);//increase tokens for token
 router.post('/transfer-tokens', tokenApi.transferTokens);
 router.post('/transfer-owner', tokenApi.transferOwnership);
 router.get('/kill-token', tokenApi.killToken);

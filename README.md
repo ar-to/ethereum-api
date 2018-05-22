@@ -810,6 +810,36 @@ http://localhost:3000/api/eth/close-subscriptions/syncingSubscription
         ]
     },
     {
+        "path": "/api/eth/subscribe-syncing",
+        "methods": [
+            "GET"
+        ]
+    },
+    {
+        "path": "/api/eth/subscribe-block",
+        "methods": [
+            "GET"
+        ]
+    },
+    {
+        "path": "/api/eth/close-subscriptions/:subscriptionType",
+        "methods": [
+            "POST"
+        ]
+    },
+    {
+        "path": "/api/eth/post-to-webhook",
+        "methods": [
+            "POST"
+        ]
+    },
+    {
+        "path": "/api/eth/webhook",
+        "methods": [
+            "POST"
+        ]
+    },
+    {
         "path": "/api-endpoints",
         "methods": [
             "GET"
