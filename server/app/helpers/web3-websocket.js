@@ -13,13 +13,9 @@ var web3;//instance
 
 // Initialize web3 and set the provider to the testRPC.
 if (process.env.WEBSOCKET_URL){
-  // web3Provider = new Web3.providers.HttpProvider(process.env.NODE_URL);
   web3Provider = new Web3.providers.WebsocketProvider(process.env.WEBSOCKET_URL);
 } else {
-  // web3Provider = new Web3.providers.HttpProvider(networkUrl);
   web3Provider = new Web3.providers.WebsocketProvider(websocketUrl);
-  // web3Provider = new Web3.providers.WebsocketProvider("ws://10.10.0.163:8546");
-  // web3Provider = new Web3.providers.WebsocketProvider("ws://10.10.0.163:8544");
 }
 web3 = new Web3(web3Provider);
 
