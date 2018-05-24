@@ -1,3 +1,6 @@
+/**
+ * Used by pm2
+ */
 module.exports = {
   apps : [{
     name   : "API",
