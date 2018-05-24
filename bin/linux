@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+#
+# Create a new screen session and run server
+# Requires screen
+# can then attach to it to see processes using : screen -x api
+#
+screen -dmS api ~/ethereum-api npm start
