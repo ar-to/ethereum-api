@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "start": "nodemon ./bin/www",
+    "prod": "pm2 start ecosystem.config.js",
     "server": "node ./bin/www",
     "debug": "./bin/dev",
     "nodemon": "nodemon --inspect ./bin/www",
@@ -22,6 +23,7 @@
     "http-errors": "~1.6.2",
     "morgan": "~1.9.0",
     "openzeppelin-solidity": "1.9.0",
+    "shelljs": "^0.8.2",
     "truffle": "^4.1.8",
     "truffle-contract": "^3.0.5",
     "truffle-hdwallet-provider": "0.0.5",

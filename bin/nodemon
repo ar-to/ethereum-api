@@ -1,0 +1,14 @@
+#!/usr/bin/env node
+
+/**
+ * Module dependencies.
+ */
+
+var shell = require('shelljs');
+
+// let runServer = shell.exec('node --version', {async:true});
+// runServer.stdout.on('data', function(data) {
+//   shell.echo(`Run Ethereum API Server ${data}`);
+// });
+
+shell.exec('npm start');
