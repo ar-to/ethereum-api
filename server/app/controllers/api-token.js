@@ -71,6 +71,23 @@ module.exports = {
       res.status(404).end();
     }
   },
+  transferFrom: function (req, res, next) {
+    // res.send(req.params.amount);
+    if (req.query) {
+      let queries = {};
+      queries.toAddress = req.query.toAddress != null && token.web3.utils.isAddress(req.query.toAddress) ? req.query.toAddress : false;
+      queries.amount = req.query.amount != null && req.query.amount > 0 ? parseInt(req.query.amount) : false;
+      if (queries.toAddress === false || queries.amount === false) {
+        res.status(404).end();
+      } else {
+        token.transferFrom(queries.toAddress, queries.amount).then((value) => {
+          return res.json(value)
+        });
+      }
+    } else {
+      res.status(404).end();
+    }
+  },
   transferOwnership: function (req, res, next) {
     /**
      * Need some clarification on when ownership is tranfered 
