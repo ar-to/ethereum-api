@@ -244,6 +244,30 @@ bash bin/truffle-migrate-ropsten
 
 **Do same for mainnet using `network-wallets/mainnet.config.json`**
 
+## Production
+
+[PM2](http://pm2.keymetrics.io/) is used to handle starting the server, watching for changes in the directories and restarting the server if it crashes. 
+
+Deploy your repo file to a remote server and install pm2 globally
+
+```
+npm i -g pm2@latest
+cd ethereum-api
+npm install
+npm run prod
+```
+This runs `pm2 start ecosystem.config.js` which start the server and watches for changes.
+
+Pm2 helpful commands
+
+- `pm2 logs API` - this shows the logs for requests and errors. You can see these logs in `~/.pm2/logs/API-error-0.log`
+- `pm2 show API` - shows information about process
+- `pm2 stop API` - this stops process.
+- `pm2 delete API` - delete process after its stopped.  NOTE: may be necessary if the server does not restart after files are updated
+
+**To restart server when machine reboots**
+
+
 ## Notes
 
 1. This api uses web3 for interacting with the node, but manual curl commands can be used via [RPC calls](https://github.com/ethereum/wiki/wiki/JSON-RPC). Test the `bash bin/rpc-call` to test an rpc call.
