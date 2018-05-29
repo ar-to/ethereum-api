@@ -40,4 +40,7 @@ router.get('/kill-token', tokenApi.killToken);
 // ERC20 Specific
 router.post('/transfer-from', tokenApi.transferFrom)//requires req.body
 
+// Ether
+router.post('/pay/:amount', tokenApi.pay);//sends ether from owner address to token contract; needs testing
+
 module.exports = router;

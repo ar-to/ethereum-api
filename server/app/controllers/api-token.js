@@ -71,17 +71,24 @@ module.exports = {
       res.status(404).end();
     }
   },
+  /**
+   * Transfers Tokens between users
+   * Request Body: from, to, value 
+   */
   transferFrom: function (req, res, next) {
-    // res.send(req.params.amount);
-    if (req.query) {
-      let queries = {};
-      queries.toAddress = req.query.toAddress != null && token.web3.utils.isAddress(req.query.toAddress) ? req.query.toAddress : false;
-      queries.amount = req.query.amount != null && req.query.amount > 0 ? parseInt(req.query.amount) : false;
-      if (queries.toAddress === false || queries.amount === false) {
-        res.status(404).end();
+    // return res.send(req.body);
+    if (req.body) {
+      let body = {};
+      body.fromAddress = req.body.fromAddress != null && token.web3.utils.isAddress(req.body.fromAddress) ? req.body.fromAddress : false;
+      body.toAddress = req.body.toAddress != null && token.web3.utils.isAddress(req.body.toAddress) ? req.body.toAddress : false;
+      body.value = req.body.value != null && req.body.value > 0 ? parseInt(req.body.value) : false;
+      if (body.fromAddress === false || body.toAddress === false || body.amount === false) {
+        body.error = 'Missing and invalid parameters in request';
+        res.status(404).send(body).end();
       } else {
-        token.transferFrom(queries.toAddress, queries.amount).then((value) => {
-          return res.json(value)
+        // res.send(body);
+        token.transferFrom(body).then((value) => {
+          return res.send(value);
         });
       }
     } else {
@@ -113,5 +120,20 @@ module.exports = {
     token.killToken().then((value) => {
       return res.send(value)
     });
+  },
+  pay: async function (req, res, next) {
+    if (req.params) {
+      let amount = 0;
+      amount = req.params.amount != null ? token.web3.utils.toWei(req.params.amount, 'ether') : false;
+      if (amount === false) {
+        res.status(404).end();
+      } else {
+        await token.pay(amount).then((value) => {
+          return res.send(value)
+        });
+      }
+    } else {
+      res.status(404).end();
+    }
   },
 }
