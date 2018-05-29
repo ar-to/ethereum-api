@@ -21,6 +21,7 @@
     "express": "~4.16.0",
     "express-list-endpoints": "^3.0.1",
     "http-errors": "~1.6.2",
+    "human-standard-token-abi": "^1.0.2",
     "morgan": "~1.9.0",
     "openzeppelin-solidity": "1.9.0",
     "shelljs": "^0.8.2",
