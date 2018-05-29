@@ -17,6 +17,13 @@ if(customAbi != null) {
   abi = abiPackage;
 }
 
+/**
+ * Contructor instance for an ERC20 token
+ * It uses the web3 1.0 Contract method so it can work on other token type
+ * @param {String} contractAddress 
+ * @param {String} fromAddress owner address which transactions will be made from
+ * @return {Object} including the instance of the contract ready to interact via the token parameter
+ */
 function Erc20Contract(contractAddress,fromAddress) {
   this.contractAddress = contractAddress;
   this.fromAddress = fromAddress;
