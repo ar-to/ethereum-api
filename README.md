@@ -14,6 +14,8 @@
   - [Server](#server)
   - [Adding Networks](#adding-networks)
 - [Notes](#notes)
+    - [Token](#token)
+    - [Ethereum](#ethereum)
 - [Scripts](#scripts)
 - [Bash](#bash)
 - [Helpers](#helpers)
@@ -267,14 +269,30 @@ Pm2 helpful commands
 
 **To restart server when machine reboots**
 
-
 ## Notes
 
 1. This api uses web3 for interacting with the node, but manual curl commands can be used via [RPC calls](https://github.com/ethereum/wiki/wiki/JSON-RPC). Test the `bash bin/rpc-call` to test an rpc call.
 
 2. Install a solidity extension into your choosen editor when developing contracts
 
-3. the contracts are compiled into the `token-contract/build/contracts` directory and it was added to `/gitignore` as a **comment** to facilitate migrating new contracts during development when using a local private node. But when coming back to the default contract simple compile and migrate or migrate with reset to overwrite existing contracts. There is also a `deployed-contracts` directory that can store the artifact files (e.g.Token.json) if you want to keep different deployments to interact with your contracts in the future. Read [here](#vc) for storing contracts in version control.
+3. the contracts are compiled into the `token-contract/build/contracts` directory and it was added to `/gitignore` as a **comment** to facilitate migrating new contracts during development when using a local private node. But when coming back to the default contract simply compile and migrate or migrate with reset to overwrite existing contracts. 
+
+4. Extra directories: 
+- `deployed-contracts` directory that can store the artifact files (e.g.abi, Token.json) if you want to keep different deployments to interact with your contracts in the future. Read [here](#vc) for storing contracts in version control.
+
+### Token
+
+1. This API is meant ot be used with an ERC20 token. Future release may add other tokens or feel free to experiment and pull request a new token.
+2. To use a custom abi for interacting with the erc20 add `"customAbi": "abi.js"` to the `config/connections.json`. The value refers to the name of the file (requires the extension) and this file need to be added inside the `deployed-contracts` directory.
+
+```
+"customAbi": "abi.js"
+```
+
+
+### Ethereum
+
+1. This api implement web3 v1.0 instead of manual rpc calls to the node.
 
 ## Scripts
 
@@ -367,7 +385,7 @@ Question about storing artifact files (e.g. Token.json) after truffle compiles c
 
 ## Connections
 
-Full example of `connections.json`
+Full example of `connections.json` and available parameters
 
 ```
 {
@@ -397,7 +415,8 @@ Full example of `connections.json`
       "token": {
         "ownerAddress": "0x83634a8eaadc34b860b4553e0daf1fac1cb43b1e",
         "tokenContractAddress": "0x3e672122bfd3d6548ee1cc4f1fa111174e8465fb",
-        "migrateContractAddress": "0xa8ebf36b0a34acf98395bc5163103efc37621052"
+        "migrateContractAddress": "0xa8ebf36b0a34acf98395bc5163103efc37621052",
+        "customAbi": "abi.js"
       }
     },
     "mainnet":{}
