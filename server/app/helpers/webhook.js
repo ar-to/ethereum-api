@@ -1,9 +1,8 @@
-const connections = require('../../../config/connections.json');
-const networkType = connections.networks.connectApi;
-const network = connections.networks[networkType]
-const blockWebhookUrl = connections.networks[networkType].blockWebhookUrl;
-const syncingWebhookUrl = connections.networks[networkType].syncingWebhookUrl;
-const testWebhookUrl = connections.networks[networkType].testWebhookUrl;
+const connections = require('../helpers/connections.js');
+const network = connections.network;
+const blockWebhookUrl = connections.blockWebhookUrl;
+const syncingWebhookUrl = connections.syncingWebhookUrl;
+const testWebhookUrl = connections.testWebhookUrl;
 
 /**
  * Object holds all parameters and functions needed to communicate by the API

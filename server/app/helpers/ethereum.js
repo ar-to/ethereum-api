@@ -416,9 +416,10 @@ async function processTxInfoData(txObject) {
     };
     // get transaction gas
     let estimatedGas;
-    await web3.eth.estimateGas(params).then((price) => {
-      estimatedGas = price;
-    })
+    await web3.eth.estimateGas(params)
+      .then((price) => {
+        estimatedGas = price;
+      })
       .catch((error, receipt) => {
         estimatedGas = null;
         reject(new Error('failed to estimate gas'))

@@ -25,6 +25,8 @@ router.get('/tx-from-block/:hashStringOrNumber', ethereumApi.getTransactionFromB
 router.get('/create-account', ethereumApi.createAccount);
 router.get('/get-account/:privateKey', ethereumApi.privateKeyToAccount);
 router.get('/accounts', ethereumApi.getAccounts);
+
+// endpoints to perform a transaction
 router.post('/send-tx-info', ethereumApi.sendTransactionInfo);
 router.post('/sign-tx',ethereumApi.signTransaction);//takes tx object and private key and creates rawData
 router.post('/send-signed-tx',ethereumApi.sendSignedTransaction);//send signed data

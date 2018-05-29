@@ -1,7 +1,6 @@
-const connections = require('../../../config/connections.json');
-const networkType = connections.networks.connectApi;
-const network = connections.networks[networkType]
-const websocketUrl = connections.networks[networkType].websocketUrl;
+const connections = require('../helpers/connections.js');
+const network = connections.network;
+const websocketUrl = connections.websocketUrl;
 const Web3 = require('web3');
 var BigNumber = require('bignumber.js');//handles web3 balances
 
