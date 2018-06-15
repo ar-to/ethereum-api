@@ -8,7 +8,8 @@
     "server": "node ./bin/www",
     "debug": "./bin/dev",
     "nodemon": "nodemon --inspect ./bin/www",
-    "compile": "truffle compile"
+    "compile": "truffle compile",
+    "babel": "babel-node ./bin/www --presets es2015"
   },
   "dependencies": {
     "axios": "^0.18.0",

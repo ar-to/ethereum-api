@@ -1,0 +1,10 @@
+[
+  {
+    "name": "threshodl",
+    "contractAddress": "0x3e672122bfd3d6548ee1cc4f1fa111174e8465fb"
+  },
+  {
+    "name": "golem",
+    "contractAddress": "0x9a0027f3c0fc4fab7825fcf50dd55dfdcca07cd6"
+  }
+]
