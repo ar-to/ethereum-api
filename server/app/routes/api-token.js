@@ -2,6 +2,9 @@ var tokenApi = require('../controllers/api-token');
 var express = require('express');
 var router = express.Router();
 
+const Erc20TokensControllerInstance = require('../controllers/api-erc20-tokens');
+const erc20TokensController = new Erc20TokensControllerInstance();
+
 /**
  * Router options
  * 1 : router.get('/', tokenApi.test);
@@ -39,5 +42,12 @@ router.get('/kill-token', tokenApi.killToken);
 
 // ERC20 Specific
 router.post('/transfer-from', tokenApi.transferFrom)//requires req.body
+
+/**
+ * Routes for multiple ERC20 Tokens
+ */
+router.get('/:tokenName', erc20TokensController.test);
+router.get('/:tokenName/getbalance/:address', erc20TokensController.getBalance);
+router.post('/:tokenName/transfer',erc20TokensController.transfer)
 
 module.exports = router;

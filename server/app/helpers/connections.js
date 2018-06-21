@@ -4,6 +4,7 @@ const network = connections.networks[networkType]
 const networkUrl = network.url;
 const websocketUrl = network.websocketUrl;
 const networkToken = network.token;
+const ownerAddress = network.token.ownerAddress;
 const blockWebhookUrl = network.blockWebhookUrl;
 const syncingWebhookUrl = network.syncingWebhookUrl;
 const testWebhookUrl = network.testWebhookUrl;
@@ -15,6 +16,7 @@ Connections = {
   networkUrl: networkUrl,
   websocketUrl: websocketUrl,
   networkToken: networkToken,
+  ownerAddress: ownerAddress,
   blockWebhookUrl: blockWebhookUrl,
   syncingWebhookUrl: syncingWebhookUrl,
   testWebhookUrl: testWebhookUrl

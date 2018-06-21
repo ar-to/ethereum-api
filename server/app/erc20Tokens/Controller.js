@@ -1,5 +1,9 @@
 const TokenHelpers = require('./TokenHelpers');
 
+/**
+ * Unused
+ */
+
 // class Controller extends TokenHelpers {
 class Controller {
   constructor(contractAddress,ownerAddress) {
@@ -8,6 +12,8 @@ class Controller {
     this.tokenContract = this.tokenHelpers.erc20Contract.token;
     this.tokenWeb3 = this.tokenHelpers.tokenWeb3
     // super(contractAddress)
+    // console.log('controller ownerAddress:',this.ownerAddress)
+    // console.log('controller contractAddress:',contractAddress)
 
     this.getTest = (req, res, next) => {
       // return res.send("Token API!!!!")
@@ -62,37 +68,53 @@ class Controller {
     this.getAddressBalance = (req, res, next) => {
       let obj = new Object();
       // let owner = token.networkToken.ownerAddress;
-      console.log('token ownerAddres:', this.ownerAddress)
-      return this.tokenHelpers.getBalance(this.ownerAddress)
-      // console.log('token methods:', this.tokenHelpers.erc20Contract.token.methods)
-      // this.tokenHelpers.erc20Contract.token.methods.balanceOf("0x83634a8eaadc34b860b4553e0daf1fac1cb43b1e")
-      // this.tokenHelpers.erc20Contract.token.methods.balanceOf("0x83634a8eaadc34b860b4553e0daf1fac1cb43b1e").call()
-      // this.tokenHelpers.erc20Contract.token.methods.balanceOf(this.ownerAddress)
-      // this.tokenHelpers.erc20Contract.token.methods.owner().call()
-      .then((balance) => {
-        console.log('bal: ',balance)
-        obj.tokenBalance = balance
-        return res.send(obj)
-      })
-      .catch((err) => {
-        console.log('err: ',err)
-        // return err;
-        obj.error = err;
-        return res.send(obj)
-      })
-    //   if (req.params) {
-    //     let address = "";
-    //     address = req.params.address != null && token.web3.utils.isAddress(req.params.address) ? req.params.address : false;
-    //     if (address === false) {
-    //       res.status(404).end();
-    //     } else {
-    //       await this.tokenHelpers.getBalance(address).then((value) => {
-    //         return res.send(value)
-    //       });
-    //     }
-    //   } else {
-    //     res.status(404).end();
-    //   }
+      // console.log('controller token this.ownerAddres:', this.ownerAddress)
+
+      if (req.params) {
+        let address = "";
+        address = req.params.address != null && this.tokenHelpers.web3.utils.isAddress(req.params.address) ? req.params.address : false;
+        if (address === false) {
+          res.status(404).send('Missing valid address').end();
+        } else {
+          // await token.getBalance(address).then((value) => {
+          //   return res.send(value)
+          // });
+          console.log('controller address:', address)
+
+          return this.tokenHelpers.getBalance(address)
+          .then((balance) => {
+            console.log('bal: ',balance)
+            obj.tokenBalance = balance
+            return res.send(obj)
+          })
+          .catch((err) => {
+            console.log('err: ',err)
+            // return err;
+            obj.error = err;
+            return res.send(obj)
+          })
+        }
+      } else {
+        res.status(404).send('Missing address parameter').end();
+      }
+
+      // return this.tokenHelpers.getBalance(this.ownerAddress)
+      // // console.log('token methods:', this.tokenHelpers.erc20Contract.token.methods)
+      // // this.tokenHelpers.erc20Contract.token.methods.balanceOf("0x83634a8eaadc34b860b4553e0daf1fac1cb43b1e")
+      // // this.tokenHelpers.erc20Contract.token.methods.balanceOf("0x83634a8eaadc34b860b4553e0daf1fac1cb43b1e").call()
+      // // this.tokenHelpers.erc20Contract.token.methods.balanceOf(this.ownerAddress)
+      // // this.tokenHelpers.erc20Contract.token.methods.owner().call()
+      // .then((balance) => {
+      //   console.log('bal: ',balance)
+      //   obj.tokenBalance = balance
+      //   return res.send(obj)
+      // })
+      // .catch((err) => {
+      //   console.log('err: ',err)
+      //   // return err;
+      //   obj.error = err;
+      //   return res.send(obj)
+      // })
     }
   }
 

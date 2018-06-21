@@ -18,10 +18,14 @@ const TruffleContract = require("truffle-contract");
 class TokenHelpers {
   constructor(contractAddress,ownerAddress) {
     // instantiate contract instance
+    // console.log('TokenHelpers ownerAddress:',ownerAddress)
+    // console.log('TokenHelpers contractAddress:',contractAddress)
     this.contractAddress = contractAddress
     this.erc20Contract = new Erc20Contract(contractAddress, ownerAddress);
     // this.tokenWeb3 = this.erc20Contract.token;
     this.tokenWeb3 = this.constructor.startToken(this.erc20Contract);
+     //console.log('TokenHelpers tokenWeb3:', this.tokenWeb3)
+    this.web3 = web3;
     var self = this;
     this.getTest = () => {
       // return "done"
@@ -65,29 +69,11 @@ class TokenHelpers {
   }
 
   async getBalance(address) {
-    // return this.tokenWeb3.methods.balanceOf(address);
+    return this.tokenWeb3.methods.balanceOf(address).call()
+  }
 
-    // return "balance"
-    // return new Promise((resolve,rej) => {
-    //   resolve('balance')
-    // })
-    // let bal = {};
-    // bal.tokenBalance = this.tokenWeb3.methods.balanceOf(address);
-    return this.tokenWeb3.methods.balanceOf("0x83634a8eaadc34b860b4553e0daf1fac1cb43b1e").call()
-    // let t2 = await tokenContract.at(contractAddress).then(function (instance) {
-    //   tokenInstance = instance;
-    //   let dec = tokenInstance.decimals().then((value) => {
-    //     bal.tokenDecimals = value;
-    //   });
-    //   return tokenInstance.balanceOf(address);
-    // }).then(function (result) {
-    //   // bal.tokenBalance = result.toFixed(bal.tokenDecimals);
-    //   bal.tokenBalance = result;
-    // }).catch(function (err) {
-    //   console.log(err.message);
-    //   return bal.error = err.message;
-    // });
-    // return bal;
+  async transfer(toAddress,value) {
+    return this.tokenWeb3.methods.transfer(toAddress, value).send({from: connections.ownerAddress})
   }
 }
 

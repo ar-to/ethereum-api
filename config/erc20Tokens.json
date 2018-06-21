@@ -6,5 +6,9 @@
   {
     "name": "golem",
     "contractAddress": "0x9a0027f3c0fc4fab7825fcf50dd55dfdcca07cd6"
+  },
+  {
+    "name": "bokky",
+    "contractAddress": "0x583cbBb8a8443B38aBcC0c956beCe47340ea1367"
   }
 ]

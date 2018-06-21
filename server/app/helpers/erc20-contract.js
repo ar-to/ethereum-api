@@ -27,6 +27,8 @@ if(customAbi != null) {
 function Erc20Contract(contractAddress,fromAddress) {
   this.contractAddress = contractAddress;
   this.fromAddress = fromAddress;
+  // console.log('Erc20Contract fromAddress:', fromAddress)
+  // console.log('Erc20Contract contractAddress:', contractAddress)
   this.token = new web3.eth.Contract(abi, contractAddress, {
     from: fromAddress
   });
