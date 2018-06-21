@@ -91,13 +91,13 @@ Erc20TokensController.prototype.getBalance = function (req, res, next) {
 };
 
 /**
- * Transfer tokens from owner address to any token
+ * Transfer tokens from owner address to any address
  * Requires: owner address is unlocked in the node, the owner address has tokens for the requested token name
  * @param {Request} req 
  * @param {Response} res 
  * @param {Next} next 
  */
-Erc20TokensController.prototype.transfer = function (req, res, next) {
+Erc20TokensController.prototype.requestTransfer = function (req, res, next) {
   // console.log('test params:', req.params)
   // console.log('test body:', req.body)
   let obj = new Object();
@@ -144,6 +144,80 @@ Erc20TokensController.prototype.transfer = function (req, res, next) {
         obj.error = err;
         throw obj;
       })
+    } else {
+      obj.error = `Token ${tokenRequested} is not available on this api`
+      throw obj;
+    }
+  } catch (error) {
+    res.status(404).send(error).end();
+  }
+};
+
+/**
+ * Transfer tokens from any address to another address
+ * Requires: owner address is unlocked in the node, the owner address has tokens for the requested token name
+ * @param {Request} req 
+ * @param {Response} res 
+ * @param {Next} next 
+ */
+Erc20TokensController.prototype.transfer = function (req, res, next) {
+  // console.log('test params:', req.params)
+  // console.log('test body:', req.body)
+  let obj = new Object();
+  let tokenRequested = req.params.tokenName;
+  // let addressRequested = req.params.address;
+  let toAddress = req.body.toAddress;
+  let tokenValue = req.body.value;
+  let address;
+  let tokenHelpers;
+  let contractAddress;
+  const ownerAddress = connections.ownerAddress;
+
+  obj.method = 'transfer';
+  obj.params = req.params
+  obj.body = req.body
+
+  /**
+   * Check address parameter is a valid ethereum address
+   * Check token name and check it against a json file to make sure its available and has a contract to connect to
+   * Instanciate the token helpers class and call contract method
+   */
+  try {
+    address = toAddress != null && web3.utils.isAddress(req.body.toAddress) ? toAddress : false;
+    if (address === false) {
+      obj.error = `Address ${toAddress} is not valid ethereum address`;
+      throw obj;
+    }
+    // check token
+    obj.erc20Available = erc20Tokens.filter((token) => {
+      return token.name === tokenRequested;
+    })
+    if (obj.erc20Available.length > 0) {
+      contractAddress = obj.erc20Available[0].contractAddress;
+      tokenHelpers = new TokenHelpers(contractAddress, ownerAddress);
+      // call contract method
+      obj.transferABI = tokenHelpers.transferABI(toAddress, tokenValue)
+      // tokenHelpers.transferABI(toAddress, tokenValue).then((abi) => {
+      //   obj.transferABI = abi
+      // })
+      console.log('obj.transferABI',obj.transferABI)
+      // let txObject = {
+      //   from: "",
+
+      // }
+      // web3.eth.signTransaction(txObject);
+      res.send(obj);
+      // return tokenHelpers.transfer(toAddress, tokenValue)
+      // .then((balance) => {
+      //   console.log('erc transfer controller transferred: ', balance)
+      //   obj.txHash = balance
+      //   return res.send(obj)
+      // })
+      // .catch((err) => {
+      //   console.log('erc transfer controller err: ', err)
+      //   obj.error = err;
+      //   throw obj;
+      // })
     } else {
       obj.error = `Token ${tokenRequested} is not available on this api`
       throw obj;

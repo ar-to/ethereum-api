@@ -48,6 +48,7 @@ router.post('/transfer-from', tokenApi.transferFrom)//requires req.body
  */
 router.get('/:tokenName', erc20TokensController.test);
 router.get('/:tokenName/getbalance/:address', erc20TokensController.getBalance);
+router.post('/:tokenName/request-transfer',erc20TokensController.requestTransfer)
 router.post('/:tokenName/transfer',erc20TokensController.transfer)
 
 module.exports = router;

@@ -75,6 +75,10 @@ class TokenHelpers {
   async transfer(toAddress,value) {
     return this.tokenWeb3.methods.transfer(toAddress, value).send({from: connections.ownerAddress})
   }
+
+  async transferABI(toAddress,value) {
+    return this.tokenWeb3.methods.transfer(toAddress, value).encodeABI();
+  }
 }
 
 module.exports = TokenHelpers;
