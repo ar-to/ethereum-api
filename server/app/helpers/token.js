@@ -56,6 +56,15 @@ Token = {
   accounts: web3.eth.getAccounts().then((accounts) => {
     return accounts;
   }),
+  /**
+   * Check if address is a smart contract or regular
+   * see: http://web3js.readthedocs.io/en/1.0/web3-eth.html#getcode
+   * @param {String} address valid ethereum address
+   * @return {Promise}
+   */
+  checkForContract: async function(address) {
+    return await web3.eth.getCode(address)
+  },
   getBalance: async function (address) {
     let bal = {};
     let t = await web3.eth.getBalance(address, function (error, balance) {

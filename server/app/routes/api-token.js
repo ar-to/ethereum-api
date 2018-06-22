@@ -26,6 +26,7 @@ router.route('/')
 router.get('/get-web3-provider', tokenApi.getWeb3Provider);
 router.get('/get-contract', tokenApi.getContractJson);//get contract json
 router.get('/get-contract-instance', tokenApi.getContractInstance);
+router.get('/check-for-contract/:address', tokenApi.checkForContract);
 
 // Web3 basic requests
 router.get('/node-accounts', tokenApi.getNodeAccounts);

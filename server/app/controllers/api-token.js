@@ -13,6 +13,18 @@ module.exports = {
   getContractInstance: function (req, res, next) {
     res.json(token.tokenContract);
   },
+  checkForContract: function(req, res, next) {
+    let obj = new Object();
+    return token.checkForContract(req.params.address).then((value) => {
+      if (value == '0x') {
+        obj.isContract = false;
+      } else {
+        obj.isContract = true;
+      }
+      obj.result = value;
+      return res.send(obj);
+    });
+  },
   getNodeAccounts: function (req, res, next) {
     let accounts = token.accounts.then((value) => {
       res.send(value);
