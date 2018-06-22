@@ -27,8 +27,8 @@
 - [Bugs to Fix](#bugs-to-fix)
 - [Improvements](#improvements)
 - [ERC20 Token Endpoint Notes](#erc20-token-endpoint-notes)
-    - [Owner Contract](#owner-contract)
-    - [ERC20 Multi-Token](#erc20-multi-token)
+    - [Owner Token API](#owner-token-api)
+    - [ERC20 Multi-Token API](#erc20-multi-token-api)
         - [Setup](#setup)
         - [Get Balance](#get-balance)
         - [Transfer](#transfer)
@@ -465,6 +465,7 @@ transferOwnership & kill functions both catch an 'invalid address'. The response
 
 There is always room for improvement, but below is a list of tasks to tackle first.
 
+- add a way to calculate default gas when transferring tokens for multi-token and owner-token apis
 - Get `transferFrom` branch working and debugged, which also included payments to the contract. This branch is for the owner api but can be integrated into the multi-tokens api once it works correctly.
 - Add unit tests via mocha, jest
 - Add logging via [winston package](https://github.com/winstonjs/winston) and rotate daily
@@ -475,7 +476,7 @@ There is always room for improvement, but below is a list of tasks to tackle fir
 
 There is currently two ways to communicate to tokens, both requiring erc20 tokens. The first is for general requests and owner specific requests. The second, is meant to communicate to multiple tokens by simply adding a name for the endpoint and the token contract used for communication. 
 
-### Owner Contract
+### Owner Token API
 This api is used for communications with the erc20 contract deployed within this repo and given in the `connections.json`:
 
 ```
@@ -501,7 +502,7 @@ http://localhost:3000/api/token/:options
 /kill-token
 ```
 
-### ERC20 Multi-Token
+### ERC20 Multi-Token API
 
 This API supports multiple erc20 token connections. This means, you can communicate to different tokens by simply changing a path parameter in the url. See the instructions below Below you change the `tokenName` and `erc20Method` and
 
@@ -604,6 +605,10 @@ Response:
     "tokenBalance": "11300"
 }
 ```
+
+#### Request Transfer
+
+This endpoint transfers tokens from the owner to any address, hence the request of tokens. The caveat is to unlock the owner address provided in the `connections.json` because it takes this as the global owner. This endpoint could be part of the owner-token api but because it can be made by any token it is best left here.
 
 #### Transfer
 
