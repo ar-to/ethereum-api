@@ -99,7 +99,8 @@ Add connections to `config/connections.json`, and set the name of the network yo
         "ownerAddress": "0x451E62137891156215d9D58BeDdc6dE3f30218e7",
         "tokenContractAddress": "0x4c59b696552863429d25917b52263532af6e6078",
         "migrateContractAddress": "0xcf068555df7eab0a9bad97829aa1a187bbffbdba"
-      }
+      },
+      "erc20Tokens": []
     },
     "ropsten":{},
     "mainnet":{}
