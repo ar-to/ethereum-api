@@ -417,7 +417,21 @@ Full example of `connections.json` and available parameters
         "tokenContractAddress": "0x3e672122bfd3d6548ee1cc4f1fa111174e8465fb",
         "migrateContractAddress": "0xa8ebf36b0a34acf98395bc5163103efc37621052",
         "customAbi": "abi.js"
-      }
+      },
+      "erc20Tokens": [
+        {
+          "name": "threshodl",
+          "contractAddress": "0x3e672122bfd3d6548ee1cc4f1fa111174e8465fb"
+        },
+        {
+          "name": "golem",
+          "contractAddress": "0x9a0027f3c0fc4fab7825fcf50dd55dfdcca07cd6"
+        },
+        {
+          "name": "bokky",
+          "contractAddress": "0x583cbBb8a8443B38aBcC0c956beCe47340ea1367"
+        }
+      ]
     },
     "mainnet":{}
   }
@@ -433,7 +447,193 @@ transferOwnership & kill functions both catch an 'invalid address'. The response
 `` subscription does not seem to work and or do
 
 
-## Endpoint Notes
+## ERC20 Token Endpoint Notes
+
+There is currently
+
+### Owner Contract
+This api is used for communications with the erc20 contract deployed within this repo and given in the `connections.json`:
+
+```
+      "token": {
+        "ownerAddress": "0x83634a8eaadc34b860b4553e0daf1fac1cb43b1e",
+        "tokenContractAddress": "0x3e672122bfd3d6548ee1cc4f1fa111174e8465fb",
+	...
+      },
+```
+
+The paths that can be used that are specific to this api are:
+
+```
+http://localhost:3000/api/token/:options
+/owner
+/node-accounts
+/balance
+/balance/:address
+/owner
+/add-tokens/:amount
+/transfer-tokens
+/transfer-owner
+/kill-token
+```
+
+### ERC20 Multi-Token Endpoints Notes
+
+This API supports multiple erc20 token connections. This means, you can communicate to different tokens by simple changing a path parameter in the url. See the instructions below Below you change the `tokenName` and `erc20Method` and
+
+The paths that this api features are below:
+```
+http://localhost:3000/api/token/:tokenName/:erc20Method
+/:tokenName
+/:tokenName/getbalance/:address
+/:tokenName/transfer
+/:tokenName/request-transfer
+```
+
+#### Setup 
+
+Add the `erc20Tokens` array parameter to the `config/connections.json` to add new tokens. Then add each new token as an object with a name and contractAddress parameter.
+
+```
+{
+  "networks": {
+    "connectApi": "ropsten",
+    "ganache":{
+...
+    },
+    "ropsten":{
+...
+      "token": {
+...
+      },
+      "erc20Tokens": [
+        {
+          "name": "threshodl",
+          "contractAddress": "0x3e672122bfd3d6548ee1cc4f1fa111174e8465fb"
+        },
+        {
+          "name": "golem",
+          "contractAddress": "0x9a0027f3c0fc4fab7825fcf50dd55dfdcca07cd6"
+        },
+        {
+          "name": "bokky",
+          "contractAddress": "0x583cbBb8a8443B38aBcC0c956beCe47340ea1367"
+        }
+      ]
+    },
+    "mainnet":{}
+  }
+}
+```
+
+Then test is by adding it the name path param
+
+Request (GET method):
+```
+http://localhost:3000/api/token/threshodl
+```
+
+Response:
+```
+{
+    "method": "test",
+    "params": {
+        "tokenName": "threshodl"
+    },
+    "erc20Available": [
+        {
+            "name": "threshodl",
+            "contractAddress": "0x3e672122bfd3d6548ee1cc4f1fa111174e8465fb"
+        }
+    ],
+    "success": "Token threshodl is available on this api!"
+}
+```
+
+You can now use the rest of the api endpoints.
+
+#### Get Balance
+
+Get the balance for an address with the token selected.
+
+**Sample**
+Request (GET method):
+```
+http://localhost:3000/api/token/threshodl/getbalance/0x07CE1F5852f222cc261ca803a1DA4a4016154539
+```
+
+Response:
+
+```
+{
+    "method": "getbalance",
+    "params": {
+        "tokenName": "threshodl",
+        "address": "0x83634a8eaadc34b860b4553e0daf1fac1cb43b1e"
+    },
+    "erc20Available": [
+        {
+            "name": "threshodl",
+            "contractAddress": "0x3e672122bfd3d6548ee1cc4f1fa111174e8465fb"
+        }
+    ],
+    "tokenBalance": "11300"
+}
+```
+
+#### Transfer
+
+Transfer tokens between any two addresses. 
+
+Url:
+```
+http://localhost:3000/api/token/threshodl/getbalance/0x07CE1F5852f222cc261ca803a1DA4a4016154539
+```
+
+Request:
+```
+{
+	"toAddress": "0x07CE1F5852f222cc261ca803a1DA4a4016154539",
+	"value": 100,
+	"gas": 41000,
+	"privateKey": "0x7f74657374320000000000000000000000000000000000000000000000000057"
+}
+```
+
+Response:
+```
+{
+    "method": "transfer",
+    "params": {
+        "tokenName": "threshodl"
+    },
+    "body": {
+        "toAddress": "0x07CE1F5852f222cc261ca803a1DA4a4016154539",
+        "value": 100,
+        "gas": 41000,
+        "privateKey": "0xa6b7d3fb531567b199d025ded92cb86c685dba5247d4455041319bb0108985e7"
+    },
+    "erc20Available": [
+        {
+            "name": "threshodl",
+            "contractAddress": "0x3e672122bfd3d6548ee1cc4f1fa111174e8465fb"
+        }
+    ],
+    "transferABI": "0xa9059cbb00000000000000000000000007ce1f5852f222cc261ca803a1da4a40161545390000000000000000000000000000000000000000000000000000000000000064",
+    "txSignature": {
+        "messageHash": "0x28f36a05a927a8d245119baef7a0f0333e441dca6256601b42fba8c827b87b6b",
+        "v": "0x2a",
+        "r": "0xac47468f77fa1c862e66a28e76672e1a9586bca5074df3c2af8d0c53b9dfff36",
+        "s": "0x1d8b87ff4d719103aff2a4384444a356f2d03bcbbeec6208acedfbcd0e6b569c",
+        "rawTransaction": "0xf8a841843b9aca0082a028943e672122bfd3d6548ee1cc4f1fa111174e8465fb80b844a9059cbb00000000000000000000000007ce1f5852f222cc261ca803a1da4a401615453900000000000000000000000000000000000000000000000000000000000000642aa0ac47468f77fa1c862e66a28e76672e1a9586bca5074df3c2af8d0c53b9dfff36a01d8b87ff4d719103aff2a4384444a356f2d03bcbbeec6208acedfbcd0e6b569c"
+    },
+    "sendTxHash": {
+        "txHash": "0x3d556ffdb7faa9577eec1251a84477d1ddaa5a12e64920d4f2bad2fc64d6cf9d"
+    }
+}
+```
+
+## Ethereum Endpoint Notes
 
 The ethereum endpoint for this API uses the [web3js](http://web3js.readthedocs.io/en/1.0/) so parameters for a web3 method is normally supported by the endpoint unless otherwise specified. 
 
@@ -632,7 +832,6 @@ A websocket connection to the node is used to subscribe to events (e.g. new bloc
 You need to enable a websocket connection inside the node and add that url to the `connections.json`
 
 ```
-```
 "ropsten":{
   ...
   "websocketUrl": "ws://10.10.0.163:8546",
@@ -673,8 +872,17 @@ http://localhost:3000/api/eth/close-subscriptions/blockSubscription
 http://localhost:3000/api/eth/close-subscriptions/syncingSubscription
 ```
 
+
 ## Endpoints
 
+To get this endpoints run:
+
+Request (GET method):
+```
+http://localhost:3000/api-endpoints
+```
+
+Response: 
 ```
 [
     {
@@ -766,6 +974,36 @@ http://localhost:3000/api/eth/close-subscriptions/syncingSubscription
         "path": "/api/token/kill-token",
         "methods": [
             "GET"
+        ]
+    },
+    {
+        "path": "/api/token/transfer-from",
+        "methods": [
+            "POST"
+        ]
+    },
+    {
+        "path": "/api/token/:tokenName",
+        "methods": [
+            "GET"
+        ]
+    },
+    {
+        "path": "/api/token/:tokenName/getbalance/:address",
+        "methods": [
+            "GET"
+        ]
+    },
+    {
+        "path": "/api/token/:tokenName/transfer",
+        "methods": [
+            "POST"
+        ]
+    },
+    {
+        "path": "/api/token/:tokenName/request-transfer",
+        "methods": [
+            "POST"
         ]
     },
     {

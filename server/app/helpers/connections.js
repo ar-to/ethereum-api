@@ -8,6 +8,7 @@ const ownerAddress = network.token.ownerAddress;
 const blockWebhookUrl = network.blockWebhookUrl;
 const syncingWebhookUrl = network.syncingWebhookUrl;
 const testWebhookUrl = network.testWebhookUrl;
+const erc20Tokens = network.erc20Tokens;
 
 Connections = {
   connections: connections,
@@ -19,7 +20,8 @@ Connections = {
   ownerAddress: ownerAddress,
   blockWebhookUrl: blockWebhookUrl,
   syncingWebhookUrl: syncingWebhookUrl,
-  testWebhookUrl: testWebhookUrl
+  testWebhookUrl: testWebhookUrl,
+  erc20Tokens: erc20Tokens
 }
 
 module.exports = Connections;

@@ -72,3 +72,4 @@ network-wallets/*
 # used to connect to contract
 deployed-contracts/*
 !deployed-contracts/.gitkeep
+!deployed-contracts/abi.js

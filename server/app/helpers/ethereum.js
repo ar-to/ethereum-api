@@ -241,7 +241,8 @@ Ethereum = {
         } else {
           // console.log('sent error', error.message);
           obj.error = error.message;
-          resolve(obj)
+          // resolve(obj)
+          reject(error)
         }
       })
       return e;
