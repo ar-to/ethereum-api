@@ -24,7 +24,13 @@
 - [Sample Contracts](#sample-contracts)
 - [Version Control]($version-control)
 - [Connections](#Connections)
-- [Endpoint Notes](#endpoint-notes)
+- [Bugs to Fix](#bugs-to-fix)
+- [ERC20 Token Endpoint Notes](#erc20-token-endpoint-notes)
+    - [Owner Contract](#owner-contract)
+    - [ERC20 Multi-Token](#erc20-multi-token)
+        - [Setup](#setup)
+        - [Get Balance](#get-balance)
+        - [Transfer](#transfer)
   - [Get Block Info](#get-block-info)
   - [Get Transaction Info](#get-transaction-info)
   - [Send Transaction](#send-transaction)
@@ -477,9 +483,9 @@ http://localhost:3000/api/token/:options
 /kill-token
 ```
 
-### ERC20 Multi-Token Endpoints Notes
+### ERC20 Multi-Token
 
-This API supports multiple erc20 token connections. This means, you can communicate to different tokens by simple changing a path parameter in the url. See the instructions below Below you change the `tokenName` and `erc20Method` and
+This API supports multiple erc20 token connections. This means, you can communicate to different tokens by simply changing a path parameter in the url. See the instructions below Below you change the `tokenName` and `erc20Method` and
 
 The paths that this api features are below:
 ```
