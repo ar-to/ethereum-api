@@ -25,15 +25,23 @@
 - [Version Control]($version-control)
 - [Connections](#Connections)
 - [Bugs to Fix](#bugs-to-fix)
+- [Improvements](#improvements)
 - [ERC20 Token Endpoint Notes](#erc20-token-endpoint-notes)
     - [Owner Contract](#owner-contract)
     - [ERC20 Multi-Token](#erc20-multi-token)
         - [Setup](#setup)
         - [Get Balance](#get-balance)
         - [Transfer](#transfer)
-  - [Get Block Info](#get-block-info)
-  - [Get Transaction Info](#get-transaction-info)
-  - [Send Transaction](#send-transaction)
+    - [Token Transaction Verification](#token-transaction-verification)
+  - [Ethereum Endpoint Notes](#ethereum-endpoint-notes)
+      - [Get Block Info](#get-block-info)
+      - [Create address](#create-address)
+      - [Get Transaction Info](#get-transaction-info)
+      - [Send Transaction](#send-transaction)
+      - [Sign and Send Manually](#sign-and-send-manually)
+          - [Get Transaction Info](#get-transaction-info)
+          - [Sign Transaction](#sign-transaction)
+          - [Send Signed Transaction](#send-signed-transaction)
 - [Webhook](#webhook)
 - [Websockets](#websockets)
 - [List of All API Endpoints](#endpoints)
@@ -449,14 +457,23 @@ Full example of `connections.json` and available parameters
 
 transferOwnership & kill functions both catch an 'invalid address'. The response it 200 with `false` boolean indicating request failed. 
 
-`api/eth/tx-from-block/hashStringOrNumber` endpoint seems to fail when connected to Ropsten Testnet but not with ganache local node
+- `api/eth/tx-from-block/hashStringOrNumber` endpoint seems to fail when connected to Ropsten Testnet but not with ganache local node
 
-`` subscription does not seem to work and or do
+- subscription does not seem to work and or do
 
+## Improvements
+
+There is always room for improvement, but below is a list of tasks to tackle first.
+
+- Get `transferFrom` branch working and debugged, which also included payments to the contract. This branch is for the owner api but can be integrated into the multi-tokens api once it works correctly.
+- Add unit tests via mocha, jest
+- Add logging via [winston package](https://github.com/winstonjs/winston) and rotate daily
+- setup a quick one command program that will create a private Ethereum node and connect node to it. Possible adding flags for the type (testnet, main, or specific network like ropsten). Test [bitcore](https://bitcore.io/) does this so test and use as reference on how  a config is setup and everything is created.
+- setup a docker container to quickly run server
 
 ## ERC20 Token Endpoint Notes
 
-There is currently
+There is currently two ways to communicate to tokens, both requiring erc20 tokens. The first is for general requests and owner specific requests. The second, is meant to communicate to multiple tokens by simply adding a name for the endpoint and the token contract used for communication. 
 
 ### Owner Contract
 This api is used for communications with the erc20 contract deployed within this repo and given in the `connections.json`:
@@ -640,6 +657,17 @@ Response:
 }
 ```
 
+### Token Transaction Verification
+
+Verifying a token transaction can be done fast by looking at [Ropsten Etherscan](https://ropsten.etherscan.io) for example. Go to your address and check the transaction was successful, then check the contract address and receiver address for the same transaction.
+
+To do this with this api and potentially create a check using blocks and transactions you need to do the following:
+
+- perform the transfer
+- get the block and transactions for that block via a GET request to this endpoint `http://localhost:3000/api/eth/block/{block-number}?showTx=true` and replace the block number with the once you see in Etherscan or via a custom webhook that receives new blocks. The response will show all the details for each transaction. Then use the transaction hash you got from the transfer and search it the response.
+- Use the "to" address from that transaction and perform a contract check to verify that it is a contract. Send a GET request to `http://localhost:3000/api/token/check-for-contract/{address}`. The response will give you a ` "isContract": true,` and the contract bytecode if its a contract.
+- Check the "from" address in that transaction and you will see the address tokens would have been received at. This and the contract check is the way to verify a token transfer. 
+
 ## Ethereum Endpoint Notes
 
 The ethereum endpoint for this API uses the [web3js](http://web3js.readthedocs.io/en/1.0/) so parameters for a web3 method is normally supported by the endpoint unless otherwise specified. 
@@ -803,7 +831,7 @@ See [web3 api](http://web3js.readthedocs.io/en/1.0/web3-eth-accounts.html#signtr
 
 ## Webhook
 
-Webhooks allow data to be sent as POST request to an external url specified in the `config/connections.json` iside the `blockWebhookUrl` paramater. 
+Webhooks allow data to be sent as POST request to an external url specified in the `config/connections.json` inside the `blockWebhookUrl` paramater. 
 
 **To use this webhook you need to have websockets connected see [websockets](#websockets) for more information**
 
