@@ -10,6 +10,8 @@ const axios = require('axios')
 const Webhook = require('../helpers/webhook.js');
 const testWebhookUrl = Webhook.testWebhookUrl;
 
+var stringify = require('json-stringify-safe');//handles circular structure to json
+
 module.exports = {
   getTest: function (req, res, next) {
     res.send("Ethereum API")
@@ -88,6 +90,31 @@ module.exports = {
   getAccounts: function (req, res, next) {
     ethereum.getAccounts().then((value) => {
       return res.send(value)
+    });
+  },
+  getWallet: function (req, res, next) {
+    ethereum.getWallet().then((value) => {
+      return res.send(stringify(value))
+    });
+  },
+  createWalletAccounts: function (req, res, next) {
+    ethereum.createWalletAccounts().then((value) => {
+      return res.send(stringify(value))
+    });
+  },
+  addAccountToWallet: function (req, res, next) {
+    ethereum.addAccountToWallet(req.params.privateKey).then((value) => {
+      return res.send(stringify(value))
+    });
+  },
+  removeAccountFromWallet: function (req, res, next) {
+    ethereum.removeAccountFromWallet(req.params.publicKey).then((value) => {
+      return res.send(stringify(value))
+    });
+  },
+  clearWallet: function (req, res, next) {
+    ethereum.clearWallet().then((value) => {
+      return res.send(stringify(value))
     });
   },
   sendTransactionInfo: async function (req, res, next) {

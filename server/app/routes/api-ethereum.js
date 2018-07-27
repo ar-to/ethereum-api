@@ -26,6 +26,16 @@ router.get('/create-account', ethereumApi.createAccount);
 router.get('/get-account/:privateKey', ethereumApi.privateKeyToAccount);
 router.get('/accounts', ethereumApi.getAccounts);
 
+/**
+ * Wallet Feature to store addresses inmemory
+ * @see [Wallet ](http://web3js.readthedocs.io/en/1.0/web3-eth-accounts.html#wallet)
+ */
+router.get('/wallet', ethereumApi.getWallet);
+router.get('/wallet/create', ethereumApi.createWalletAccounts);
+router.post('/wallet/add/:privateKey', ethereumApi.addAccountToWallet);
+router.post('/wallet/remove/:publicKey', ethereumApi.removeAccountFromWallet);
+router.post('/wallet/clear', ethereumApi.clearWallet);
+
 // endpoints to perform a transaction
 router.post('/send-tx-info', ethereumApi.sendTransactionInfo);
 router.post('/sign-tx',ethereumApi.signTransaction);//takes tx object and private key and creates rawData

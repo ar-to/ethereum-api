@@ -185,6 +185,43 @@ Ethereum = {
     return e;
   },
   /**
+   * Wallet API
+   * Creates, adds, removes and clears an inmemory wallet which contains addresses(public, private, index)
+   * If you need to store addresses local to the node consider creating new accounts within the node that way
+   * they create new Keytore files that you can backup and reuse
+   * @see [Wallet ](http://web3js.readthedocs.io/en/1.0/web3-eth-accounts.html#wallet)
+   */
+  getWallet: async function () {
+    return new Promise(((resolve, reject) => {
+      e = web3.eth.accounts.wallet;
+      resolve(e);
+    }))
+  },
+  createWalletAccounts: async function () {
+    return new Promise(((resolve, reject) => {
+      e = web3.eth.accounts.wallet.create(1);
+      resolve(e);
+    }))
+  },
+  addAccountToWallet: async function (privateKey) {
+    return new Promise(((resolve, reject) => {
+      e = web3.eth.accounts.wallet.add(privateKey);
+      resolve(e);
+    }))
+  },
+  removeAccountFromWallet: async function (publicKey) {
+    return new Promise(((resolve, reject) => {
+      e = web3.eth.accounts.wallet.remove(publicKey);
+      resolve(e);
+    }))
+  },
+  clearWallet: async function () {
+    return new Promise(((resolve, reject) => {
+      e = web3.eth.accounts.wallet.clear();
+      resolve(e);
+    }))
+  },
+  /**
    * Get information object on the transaction you plan to send before sending
    * This helps check for gas and gas price and verify your transaction is correct
    * @param {Object} txObject is the req.body from the controller that has been validated

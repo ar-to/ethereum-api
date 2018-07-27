@@ -23,6 +23,7 @@
     "express-list-endpoints": "^3.0.1",
     "http-errors": "~1.6.2",
     "human-standard-token-abi": "^1.0.2",
+    "json-stringify-safe": "^5.0.1",
     "morgan": "~1.9.0",
     "openzeppelin-solidity": "1.9.0",
     "shelljs": "^0.8.2",
