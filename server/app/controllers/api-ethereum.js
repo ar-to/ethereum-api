@@ -72,7 +72,13 @@ module.exports = {
       return res.send(value)
     });
   },
+  getTransactionReceipt: function (req, res, next) {
+    ethereum.getTransactionReceipt(req.params.transactionHash).then((value) => {
+      return res.send(value)
+    });
+  },
   getTransactionFromBlock: function (req, res, next) {
+    console.log('ff', req.params.hashStringOrNumber)
     ethereum.getTransactionFromBlock(req.params.hashStringOrNumber).then((value) => {
       return res.send(value)
     });

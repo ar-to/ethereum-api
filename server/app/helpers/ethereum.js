@@ -47,6 +47,24 @@ Ethereum = {
         return obj;
       })
   },
+  getCurrentGasPrices: function () {
+    return new Promise((resolve, reject) => {
+      return axios.get(gasAPI).then(response => {
+        let prices = {
+          low: response.data.safeLow / 10,
+          medium: response.data.average / 10,
+          high: response.data.fast / 10
+        }
+        return resolve(prices);
+      }).catch(error => {
+        return reject(error);
+      })
+    })
+  },
+  getTransactionCount: async function (fromAddress) {
+    const txCount = await web3.eth.getTransactionCount(fromAddress);
+    return txCount;
+  },
   /**
    * Get ethereum and wei balances for a valid address
    * @param {string} address 
@@ -91,7 +109,25 @@ Ethereum = {
     let obj = {};
     return await web3.eth.getTransaction(transactionHash)
       .then(function (result) {
-        obj.accounts = result;
+        obj = result;
+        return obj;
+      }).catch(function (err) {
+        // console.log('getTransaction', err.message);
+        obj.error = err.message;
+        return obj;
+      });
+  },
+  /**
+   * Get transaction details by hash
+   * @param {string} transactionHash hash for a transaction
+   * @return {(Promise|Object)}
+   */
+  getTransactionReceipt: async function (transactionHash) {
+    let obj = {};
+    // return await web3.eth.getTransaction(transactionHash)
+    return await web3.eth.getTransactionReceipt(transactionHash)
+      .then(function (result) {
+        obj = result;
         return obj;
       }).catch(function (err) {
         // console.log('getTransaction', err.message);

@@ -16,7 +16,7 @@ const TruffleContract = require("truffle-contract");
 
 
 class TokenHelpers {
-  constructor(contractAddress,ownerAddress) {
+  constructor(contractAddress, ownerAddress) {
     // instantiate contract instance
     // console.log('TokenHelpers ownerAddress:',ownerAddress)
     // console.log('TokenHelpers contractAddress:',contractAddress)
@@ -24,17 +24,18 @@ class TokenHelpers {
     this.erc20Contract = new Erc20Contract(contractAddress, ownerAddress);
     // this.tokenWeb3 = this.erc20Contract.token;
     this.tokenWeb3 = this.constructor.startToken(this.erc20Contract);
-     //console.log('TokenHelpers tokenWeb3:', this.tokenWeb3)
+    this.txInputDecoder = this.erc20Contract.txInputDecoder;
+    //console.log('TokenHelpers tokenWeb3:', this.tokenWeb3)
     this.web3 = web3;
     var self = this;
     this.getTest = () => {
       // return "done"
-      return new Promise((resolve,rej) => {
+      return new Promise((resolve, rej) => {
         resolve('Token')
       })
-      .then((value) => {
-        return `${value} Works`
-      })
+        .then((value) => {
+          return `${value} Works`
+        })
     }
   }
 
@@ -50,7 +51,7 @@ class TokenHelpers {
   /**
    * @return {Array} List of public addresses that belong to the node connected to
    */
-  accounts() {
+  async accounts() {
     return web3.eth.getAccounts()
   };
 
@@ -60,24 +61,68 @@ class TokenHelpers {
    * @param {String} address valid ethereum address
    * @return {Promise}
    */
-  checkForContract(address) {
+  async checkForContract(address) {
     return web3.eth.getCode(address)
   }
 
-  getTokenOwner() {
+  /**
+   * Decode transaction input data
+   * to get to address and token value during a token transfer
+   * @param {string} data is the data for the transaction. Can either be the encodedABI or the taken from the input parameter from the transaction details
+   */
+  async decodeTxInput(data) {
+    return this.txInputDecoder.decodeData(data);
+  }
+
+  async getTokenOwner() {
     return this.tokenWeb3.methods.owner().call()
   }
 
   async getBalance(address) {
-    return this.tokenWeb3.methods.balanceOf(address).call()
+    if (address) {
+      return this.tokenWeb3.methods.balanceOf(address).call()
+    } else {
+      return Promise.reject('Missing Address')
+    }
   }
 
-  async transfer(toAddress,value) {
-    return this.tokenWeb3.methods.transfer(toAddress, value).send({from: connections.ownerAddress})
+  /**
+   * Get the estimated gas for a transacition when passing the data parameter
+   * @see [Options Information ](http://web3js.readthedocs.io/en/1.0/web3-eth.html#sendtransaction)
+   * @param {string} fromAddress 
+   * @param {string} toAddress 
+   * @param {string} abiData 
+   * @param {string} ether 
+   * @return {Promise}
+   */
+  async estimateGasWithAbiData(fromAddress, toAddress, abiData, ether = null) {
+    return web3.eth.estimateGas({ from: fromAddress, to: toAddress, data: abiData, amount: ether })
   }
 
-  async transferABI(toAddress,value) {
-    return this.tokenWeb3.methods.transfer(toAddress, value).encodeABI();
+  /**
+   * Get final gas for contract transfer
+   * @see [More Information](http://web3js.readthedocs.io/en/1.0/web3-eth-contract.html#methods-mymethod-estimategas)
+   * @param {gasLimit} gasLimit total gas that transaction will send
+   * @param {*} toAddress 
+   * @param {*} value 
+   * @return {Promise}
+   */
+  async estimateTransferGas(gasLimit, toAddress, value) {
+    return this.tokenWeb3.methods.transfer(toAddress, value).estimateGas({ gas: gasLimit });
+  }
+
+  async transfer(toAddress, value) {
+    return this.tokenWeb3.methods.transfer(toAddress, value).send({ from: connections.ownerAddress })
+  }
+
+  async transferABI(toAddress, value) {
+    // return this.tokenWeb3.methods.transfer(toAddress, value).encodeABI();
+    if (toAddress && value) {
+      return this.tokenWeb3.methods.transfer(toAddress, value).encodeABI();
+      // return Promise.reject('sss')
+    } else {
+      return Promise.reject('Missing Address or value')
+    }
   }
 }
 

@@ -21,6 +21,7 @@ router.get('/balance/:address', ethereumApi.getBalance);
 router.get('/block', ethereumApi.getBlockNumber);
 router.get('/block/:blockNumber', ethereumApi.getBlock);
 router.get('/tx/:transactionHash', ethereumApi.getTransaction);
+router.get('/tx-receipt/:transactionHash', ethereumApi.getTransactionReceipt);
 router.get('/tx-from-block/:hashStringOrNumber', ethereumApi.getTransactionFromBlock);
 router.get('/create-account', ethereumApi.createAccount);
 router.get('/get-account/:privateKey', ethereumApi.privateKeyToAccount);
