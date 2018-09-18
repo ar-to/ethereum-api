@@ -465,6 +465,7 @@ transferOwnership & kill functions both catch an 'invalid address'. The response
 
 There is always room for improvement, but below is a list of tasks to tackle first.
 
+- error handling needs to be better and standarized. Using combination of promises/catch and try/catch but only some error are sent as a response, most stop the server and the requests gets timedout.
 - add a way to calculate default gas when transferring tokens for multi-token and owner-token apis
 - Get `transferFrom` branch working and debugged, which also included payments to the contract. This branch is for the owner api but can be integrated into the multi-tokens api once it works correctly.
 - Add unit tests via mocha, jest
@@ -616,8 +617,17 @@ Transfer tokens between any two addresses.
 
 Url:
 ```
-http://localhost:3000/api/token/threshodl/getbalance/0x07CE1F5852f222cc261ca803a1DA4a4016154539
+http://localhost:3000/api/token/threshodl/transfer
 ```
+
+Options: 
+
+- gas[optional] - Example: "gas": 41000. Defaults to gas from web3.eth.estimateGas()
+- fromAddres[required]
+- toAddress[required]
+- value[required] - number/string. Keep in mind the decimal spaces for the token contract. Usually is 18. Example below is 2, so 100 is actually 100 tokens.
+- privateKey[required] - sender(fromAddress) private key. 
+- priority[required] - low, medium, high. Based on thi [api](https://ethgasstation.info/json/ethgasAPI.json) and fast, average and safelow are divided by 10.
 
 Request:
 ```
@@ -969,6 +979,12 @@ Response:
         ]
     },
     {
+        "path": "/api/token/check-for-contract/:address",
+        "methods": [
+            "GET"
+        ]
+    },
+    {
         "path": "/api/token/node-accounts",
         "methods": [
             "GET"
@@ -1047,6 +1063,12 @@ Response:
         ]
     },
     {
+        "path": "/api/token/:tokenName/decode-tx-input",
+        "methods": [
+            "POST"
+        ]
+    },
+    {
         "path": "/api/eth",
         "methods": [
             "GET"
@@ -1083,6 +1105,12 @@ Response:
         ]
     },
     {
+        "path": "/api/eth/tx-receipt/:transactionHash",
+        "methods": [
+            "GET"
+        ]
+    },
+    {
         "path": "/api/eth/tx-from-block/:hashStringOrNumber",
         "methods": [
             "GET"
@@ -1104,6 +1132,36 @@ Response:
         "path": "/api/eth/accounts",
         "methods": [
             "GET"
+        ]
+    },
+    {
+        "path": "/api/eth/wallet",
+        "methods": [
+            "GET"
+        ]
+    },
+    {
+        "path": "/api/eth/wallet/create",
+        "methods": [
+            "GET"
+        ]
+    },
+    {
+        "path": "/api/eth/wallet/add/:privateKey",
+        "methods": [
+            "POST"
+        ]
+    },
+    {
+        "path": "/api/eth/wallet/remove/:publicKey",
+        "methods": [
+            "POST"
+        ]
+    },
+    {
+        "path": "/api/eth/wallet/clear",
+        "methods": [
+            "POST"
         ]
     },
     {
