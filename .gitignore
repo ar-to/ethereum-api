@@ -73,3 +73,6 @@ network-wallets/*
 deployed-contracts/*
 !deployed-contracts/.gitkeep
 !deployed-contracts/abi.js
+
+# compiled truffle folders and json files
+token-contract/build/

@@ -1,4 +1,4 @@
-# Threshodl Token
+# Ethereum/Token API
 
 ## Table of Contents
 
@@ -155,6 +155,8 @@ First add the same OWNER_ACCOUNT address from the environment variable into the 
 See section on adding new networks
 
 #### Run truffle commands
+Make sure you have truffle installed glabally before trying these commands.
+
 Run Compile when changes are made to the `token-contract/contracts` directory.
 ```
 bash bin/truffle-compile
@@ -170,6 +172,7 @@ Resetting to overwrite the existing contracts can be done with:
 ```
 bash bin/truffle-migrate-reset
 ```
+See [scripts](#scripts) for all available scripts.
 
 **Remember to update the addresses in the `.env` file so the api will know which address to use for the token contract and owner.**
 
