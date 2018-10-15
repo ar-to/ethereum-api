@@ -12,8 +12,8 @@ import "../../node_modules/openzeppelin-solidity/contracts/token/ERC20/MintableT
  * @dev INITIAL_SUPPLY is initial balance of tokens given to owner address
  */
 contract Token is StandardToken, Ownable, MintableToken {
-    string public name = "ThreshodlToken";
-    string public symbol = "THDL";
+    string public name = "TokenName";
+    string public symbol = "TN";
     uint public decimals = 2;
     uint public INITIAL_SUPPLY = 120 * (10 ** decimals);
     address public owner;
